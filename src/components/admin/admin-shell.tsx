@@ -26,15 +26,10 @@ const navItems = [
   { to: '/admin/usuarios', label: 'Usuários', icon: Users, exact: false },
 ] as const
 
-const pageTitles: Record<string, string> = {
-  '/admin': 'Visão geral',
-  '/admin/apps': 'Apps',
-  '/admin/apps/novo': 'Novo app',
-  '/admin/usuarios': 'Usuários',
-}
-
 function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
-  const pathname = useRouterState({ select: (state) => state.location.pathname })
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  })
 
   return (
     <nav className="flex flex-col gap-1">
@@ -122,11 +117,6 @@ export function AdminShell({
   user: SessionUser
   children: React.ReactNode
 }) {
-  const pathname = useRouterState({ select: (state) => state.location.pathname })
-  const title =
-    pageTitles[pathname] ??
-    (pathname.startsWith('/admin/apps/') ? 'Editar app' : 'Painel')
-
   return (
     <div className="min-h-svh bg-[#f5f7f6]">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border bg-card lg:flex">
@@ -167,7 +157,7 @@ export function AdminShell({
             </div>
           </SheetContent>
         </Sheet>
-        <p className="text-sm font-bold text-foreground">{title}</p>
+        <p className="text-sm font-semibold text-foreground">Admin</p>
         <span className="flex size-8 items-center justify-center rounded-full bg-brand text-xs font-bold text-brand-foreground">
           {user.name.trim().charAt(0).toUpperCase()}
         </span>
@@ -175,20 +165,6 @@ export function AdminShell({
 
       <main className="lg:pl-64">
         <div className="mx-auto w-full max-w-6xl px-4 py-5 lg:px-8 lg:py-8">
-          <div className="mb-5 hidden items-center justify-between lg:flex">
-            <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
-                {title}
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                Gerencie o catálogo e as pessoas da plataforma.
-              </p>
-            </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/20 bg-brand-soft px-3 py-1 text-[11px] font-semibold text-brand">
-              <span className="size-1.5 rounded-full bg-brand" />
-              Painel administrativo
-            </span>
-          </div>
           {children}
         </div>
       </main>

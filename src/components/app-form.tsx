@@ -57,6 +57,7 @@ function emptyForm(developer = ''): AppInput {
     fileUrl: '',
     fileName: '',
     fileSize: null,
+    downloads: 0,
   }
 }
 
@@ -91,6 +92,7 @@ export function AppForm({
           fileUrl: initial.fileUrl ?? '',
           fileName: initial.fileName ?? '',
           fileSize: initial.fileSize,
+          downloads: initial.downloads,
         }
       : emptyForm(defaultDeveloper),
   )
@@ -355,6 +357,22 @@ export function AppForm({
               value={form.size}
               onChange={(event) => update('size', event.target.value)}
               placeholder="Ex.: 48 MB"
+            />
+          </Field>
+          <Field label="Downloads">
+            <Input
+              type="number"
+              min={0}
+              step={1}
+              inputMode="numeric"
+              value={form.downloads}
+              onChange={(event) =>
+                update(
+                  'downloads',
+                  Math.max(0, Math.floor(Number(event.target.value) || 0)),
+                )
+              }
+              placeholder="0"
             />
           </Field>
           <Field label="Requisitos">

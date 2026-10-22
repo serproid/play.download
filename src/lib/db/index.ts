@@ -1,27 +1,49 @@
-import { drizzle } from 'drizzle-orm/node-postgres'
-import { Pool } from 'pg'
+import { AsyncLocalStorage } from 'node:async_hooks'
+import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import * as schema from './schema'
 
-const connectionString = process.env.DATABASE_URL
+const connectionString = process.env.DATABASE_URL ?? ''
+const sslDisabled = process.env.DATABASE_SSL === 'false'
 const useSsl =
-  process.env.DATABASE_SSL === 'true' ||
-  Boolean(connectionString && /supabase|neon|sslmode=require/.test(connectionString))
+  !sslDisabled &&
+  (process.env.DATABASE_SSL === 'true' ||
+    Boolean(
+      connectionString &&
+      /supabase|neon|sslmode=require/.test(connectionString),
+    ))
 
-declare global {
-  var __baixappPool: Pool | undefined
-}
+type Database = PostgresJsDatabase<typeof schema>
+type RequestStore = { db: Database }
 
-export const pool =
-  globalThis.__baixappPool ??
-  new Pool({
-    connectionString,
+const storage = new AsyncLocalStorage<RequestStore>()
+
+function createClient() {
+  return postgres(connectionString, {
     max: 5,
-    ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+    idle_timeout: 5,
+    connect_timeout: 10,
+    prepare: false,
+    ssl: useSsl ? { rejectUnauthorized: false } : false,
   })
-
-if (process.env.NODE_ENV !== 'production') {
-  globalThis.__baixappPool = pool
 }
 
-export const db = drizzle(pool, { schema })
+const baseDb = drizzle(createClient(), { schema })
+
+export async function withDatabase<T>(fn: () => Promise<T>): Promise<T> {
+  if (storage.getStore()) return fn()
+
+  const requestDb = drizzle(createClient(), { schema })
+  return storage.run({ db: requestDb }, fn)
+}
+
+export const db = new Proxy(baseDb, {
+  get(target, property) {
+    const store = storage.getStore()
+    const instance = store?.db ?? target
+    const value = Reflect.get(instance, property, instance)
+    return typeof value === 'function' ? value.bind(instance) : value
+  },
+}) as Database
+
 export { schema }

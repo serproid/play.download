@@ -73,9 +73,11 @@ function AdminDashboard() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between lg:hidden">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-extrabold tracking-tight">Visão geral</h1>
+          <h1 className="text-xl font-extrabold tracking-tight lg:text-2xl">
+            Visão geral
+          </h1>
           <p className="text-[11px] text-muted-foreground">
             Acompanhe os downloads dos seus apps.
           </p>

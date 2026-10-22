@@ -150,9 +150,9 @@ O Better Auth usa **base URL dinâmica** com allowlist, então funciona tanto no
 
 ### Banco de dados no Workers
 
-Use a connection string do **Transaction Pooler** do Supabase (porta `6543`). O driver `pg` roda no Workers com `nodejs_compat`; mantenha o pool pequeno (já configurado com `max: 5`). Para volumes altos, considere Cloudflare Hyperdrive na frente do Supabase.
+Use a connection string do **Transaction Pooler** do Supabase (porta `6543`). O app usa `postgres.js` com uma conexão isolada por requisição (via `AsyncLocalStorage`) para respeitar o isolamento de I/O do Cloudflare Workers. Em desenvolvimento local, se o runtime não conseguir negociar TLS com o pooler, use `DATABASE_SSL=false` no `.env`; em produção mantenha `DATABASE_SSL=true`. Para volumes altos, considere Cloudflare Hyperdrive na frente do Supabase.
 
-Após configurar as variáveis, rode as migrations localmente apontando para o mesmo banco:
+Configure os secrets no Worker com `npx wrangler secret put DATABASE_URL`, `npx wrangler secret put BETTER_AUTH_SECRET` e `npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY` (ou pelo painel da Cloudflare). Depois, rode as migrations localmente apontando para o mesmo banco:
 
 ```bash
 npm run db:push

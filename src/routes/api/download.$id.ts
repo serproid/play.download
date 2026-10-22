@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { isDemoMode } from '@/lib/auth.functions'
 import { db } from '@/lib/db'
@@ -42,10 +42,6 @@ export const Route = createFileRoute('/api/download/$id')({
           appId: app.id,
           userId: session?.user.id ?? null,
         })
-        await db
-          .update(apps)
-          .set({ downloads: sql`${apps.downloads} + 1` })
-          .where(eq(apps.id, app.id))
 
         return new Response(null, {
           status: 302,

@@ -75,6 +75,8 @@ const catalogSelection = {
   categoryName: categories.name,
 }
 
+const realDownloadsSelection = sql<number>`(select count(*)::int from ${downloads} where ${downloads.appId} = ${apps.id})`
+
 function toCatalogApp(row: CatalogRow): CatalogApp {
   return {
     id: row.id,
@@ -99,6 +101,11 @@ function toCatalogApp(row: CatalogRow): CatalogApp {
 function normalizeText(value: string | null | undefined) {
   const trimmed = value?.trim()
   return trimmed ? trimmed : null
+}
+
+function normalizeDownloads(value: number | null | undefined) {
+  if (!Number.isFinite(value)) return 0
+  return Math.max(0, Math.floor(Number(value)))
 }
 
 function slugify(value: string) {
@@ -281,14 +288,20 @@ export const getMySpace = createServerFn({ method: 'GET' }).handler(
     const session = await requireUser()
 
     const submissionRows = await db
-      .select(catalogSelection)
+      .select({
+        ...catalogSelection,
+        realDownloads: realDownloadsSelection,
+      })
       .from(apps)
       .leftJoin(categories, eq(apps.categoryId, categories.id))
       .where(eq(apps.submittedBy, session.user.id))
       .orderBy(desc(apps.createdAt))
 
     return {
-      submissions: submissionRows.map(toCatalogApp),
+      submissions: submissionRows.map((row) => ({
+        ...toCatalogApp(row),
+        realDownloads: Number(row.realDownloads ?? 0),
+      })),
     }
   },
 )
@@ -335,6 +348,7 @@ export const submitApp = createServerFn({ method: 'POST' })
       fileUrl: normalizeText(data.fileUrl),
       fileName: normalizeText(data.fileName),
       fileSize: data.fileSize,
+      downloads: normalizeDownloads(data.downloads),
       status: 'published',
       submittedBy: session.user.id,
     })
@@ -363,6 +377,7 @@ export const adminListApps = createServerFn({ method: 'GET' }).handler(
         submittedBy: apps.submittedBy,
         submittedByName: user.name,
         createdAt: apps.createdAt,
+        realDownloads: realDownloadsSelection,
       })
       .from(apps)
       .leftJoin(categories, eq(apps.categoryId, categories.id))
@@ -383,6 +398,7 @@ export const adminListApps = createServerFn({ method: 'GET' }).handler(
       submittedBy: row.submittedBy,
       submittedByName: row.submittedByName,
       createdAt: row.createdAt.toISOString(),
+      realDownloads: Number(row.realDownloads ?? 0),
     }))
   },
 )
@@ -409,6 +425,7 @@ export const adminGetApp = createServerFn({ method: 'GET' })
         submittedBy: apps.submittedBy,
         submittedByName: user.name,
         createdAt: apps.createdAt,
+        realDownloads: realDownloadsSelection,
       })
       .from(apps)
       .leftJoin(categories, eq(apps.categoryId, categories.id))
@@ -432,6 +449,7 @@ export const adminGetApp = createServerFn({ method: 'GET' })
       submittedBy: row.submittedBy,
       submittedByName: row.submittedByName,
       createdAt: row.createdAt.toISOString(),
+      realDownloads: Number(row.realDownloads ?? 0),
     }
   })
 
@@ -457,6 +475,7 @@ export const getMyApp = createServerFn({ method: 'GET' })
         submittedBy: apps.submittedBy,
         submittedByName: user.name,
         createdAt: apps.createdAt,
+        realDownloads: realDownloadsSelection,
       })
       .from(apps)
       .leftJoin(categories, eq(apps.categoryId, categories.id))
@@ -480,6 +499,7 @@ export const getMyApp = createServerFn({ method: 'GET' })
       submittedBy: row.submittedBy,
       submittedByName: row.submittedByName,
       createdAt: row.createdAt.toISOString(),
+      realDownloads: Number(row.realDownloads ?? 0),
     }
   })
 
@@ -524,6 +544,7 @@ export const updateMyApp = createServerFn({ method: 'POST' })
         fileUrl: normalizeText(data.fileUrl),
         fileName: normalizeText(data.fileName),
         fileSize: data.fileSize,
+        downloads: normalizeDownloads(data.downloads),
       })
       .where(eq(apps.id, data.id))
 
@@ -555,6 +576,7 @@ async function persistApp(
     fileUrl: normalizeText(data.fileUrl),
     fileName: normalizeText(data.fileName),
     fileSize: data.fileSize,
+    downloads: normalizeDownloads(data.downloads),
     status: data.status ?? 'published',
     featured: data.featured ?? false,
   }
@@ -791,32 +813,6 @@ export const adminDeleteUser = createServerFn({ method: 'POST' })
       headers: getRequestHeaders(),
     })
     return { ok: true }
-  })
-
-export const registerDownload = createServerFn({ method: 'POST' })
-  .validator((input: { appId: string }) => input)
-  .handler(async ({ data }) => {
-    if (isDemoMode()) return { ok: true }
-
-    const session = await auth.api.getSession({ headers: getRequestHeaders() })
-    const [app] = await db
-      .select({ id: apps.id, fileUrl: apps.fileUrl })
-      .from(apps)
-      .where(and(eq(apps.id, data.appId), eq(apps.status, 'published')))
-      .limit(1)
-
-    if (!app) throw new Error('App não encontrado.')
-
-    await db.insert(downloads).values({
-      appId: app.id,
-      userId: session?.user.id ?? null,
-    })
-    await db
-      .update(apps)
-      .set({ downloads: sql`${apps.downloads} + 1` })
-      .where(eq(apps.id, app.id))
-
-    return { ok: true, fileUrl: app.fileUrl }
   })
 
 export { hasAdminRole }

@@ -318,6 +318,7 @@ export function getDemoAdminApps(): AdminApp[] {
     submittedBy: 'demo-admin',
     submittedByName: 'Administrador Demo',
     createdAt: app.updatedAt,
+    realDownloads: Math.round(app.downloads * 0.12),
   }))
 }
 
@@ -373,7 +374,7 @@ export function getDemoAdminStats() {
   return {
     published: apps.filter((app) => app.status === 'published').length,
     pending: apps.filter((app) => app.status === 'pending').length,
-    downloads: apps.reduce((total, app) => total + app.downloads, 0),
+    downloads: apps.reduce((total, app) => total + app.realDownloads, 0),
     users: demoUsers.length,
     reviews: demoApps.reduce((total, app) => total + app.reviewCount, 0),
   }

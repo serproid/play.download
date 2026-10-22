@@ -25,6 +25,7 @@ export type CatalogApp = {
   ageRating: string | null
   updatedAt: string
   status: AppStatus
+  realDownloads?: number
 }
 
 export type ReviewItem = {
@@ -73,9 +74,11 @@ export type AppInput = {
   fileUrl: string
   fileName: string
   fileSize: number | null
+  downloads: number
 }
 
 export type AdminApp = CatalogApp & {
+  realDownloads: number
   description: string | null
   version: string | null
   size: string | null
