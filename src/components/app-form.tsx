@@ -108,6 +108,7 @@ export function AppForm({
   const [uploading, setUploading] = useState<string | null>(null)
   const iconInput = useRef<HTMLInputElement>(null)
   const fileInput = useRef<HTMLInputElement>(null)
+  const screenshotInput = useRef<HTMLInputElement>(null)
 
   const filteredCategories = categories.filter(
     (category) => category.type === null || category.type === form.type,
@@ -120,7 +121,10 @@ export function AppForm({
     setForm((current) => ({ ...current, [key]: value }))
   }
 
-  async function upload(file: File, field: 'iconUrl' | 'bannerUrl' | 'file') {
+  async function upload(
+    file: File,
+    field: 'iconUrl' | 'bannerUrl' | 'file' | 'screenshot',
+  ) {
     setUploading(field)
     try {
       const body = new FormData()
@@ -136,7 +140,16 @@ export function AppForm({
         throw new Error(result.error ?? 'Falha no upload.')
       }
 
-      if (field === 'file') {
+      if (field === 'screenshot') {
+        setForm((current) =>
+          current.screenshots.length >= 8
+            ? current
+            : {
+                ...current,
+                screenshots: [...current.screenshots, result.url!],
+              },
+        )
+      } else if (field === 'file') {
         setForm((current) => ({
           ...current,
           fileUrl: result.url!,
@@ -166,7 +179,7 @@ export function AppForm({
       return
     }
 
-    const payload: AppInput = { ...form, screenshots: [] }
+    const payload: AppInput = { ...form }
 
     setPending(true)
     try {
@@ -466,6 +479,84 @@ export function AppForm({
         </div>
       </section>
 
+      <section className="rounded-2xl border border-border bg-card p-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="text-sm font-bold text-foreground">Imagens do app</h2>
+          <span className="text-[11px] text-muted-foreground">
+            {form.screenshots.length}/8
+          </span>
+        </div>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Até 8 capturas de tela. Recomendado 1080×1920.
+        </p>
+
+        <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
+          {form.screenshots.map((src, index) => (
+            <div
+              key={`${src}-${index}`}
+              className="relative overflow-hidden rounded-xl border border-border bg-muted"
+            >
+              <img
+                src={src}
+                alt={`Captura ${index + 1} do app`}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[9/16] w-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  update(
+                    'screenshots',
+                    form.screenshots.filter(
+                      (_, itemIndex) => itemIndex !== index,
+                    ),
+                  )
+                }
+                className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+                aria-label={`Remover captura ${index + 1}`}
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+          ))}
+
+          {form.screenshots.length < 8 ? (
+            <button
+              type="button"
+              onClick={() => screenshotInput.current?.click()}
+              disabled={uploading === 'screenshot'}
+              className="flex aspect-[9/16] w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border bg-background text-muted-foreground hover:bg-accent disabled:opacity-60"
+            >
+              {uploading === 'screenshot' ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <ImagePlus className="size-4" />
+              )}
+              <span className="text-[10px] font-medium">Adicionar</span>
+            </button>
+          ) : null}
+        </div>
+
+        <input
+          ref={screenshotInput}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          multiple
+          className="hidden"
+          onChange={(event) => {
+            const files = Array.from(event.target.files ?? [])
+            const available = Math.max(0, 8 - form.screenshots.length)
+            if (files.length > available) {
+              toast.error('Você pode adicionar até 8 imagens.')
+            }
+            for (const file of files.slice(0, available)) {
+              void upload(file, 'screenshot')
+            }
+            event.target.value = ''
+          }}
+        />
+      </section>
       {mode === 'admin' ? (
         <section className="rounded-2xl border border-border bg-card p-4">
           <h2 className="text-sm font-bold text-foreground">Publicação</h2>

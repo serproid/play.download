@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
-import { Info, Star, ThumbsUp } from 'lucide-react'
+import { BookmarkPlus, Info, Share2, Star, ThumbsUp } from 'lucide-react'
 import { AppIcon } from '@/components/store/app-icon'
 import { DeviceNote, InstallButton } from '@/components/store/app-actions'
 import { Stars } from '@/components/store/stars'
@@ -192,10 +192,67 @@ function AppDetailPage() {
 
       <div className="mt-6">
         <InstallButton app={app} />
+        <div className="mt-5 grid grid-cols-2 gap-3 px-1 text-[13px] font-medium text-muted-foreground">
+          <div className="flex items-center gap-2.5">
+            <Share2 className="size-5 shrink-0" strokeWidth={2} />
+            <span>Compartilhar</span>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <BookmarkPlus className="size-5 shrink-0" strokeWidth={2} />
+            <span className="leading-4">Adicionar à lista de desejos</span>
+          </div>
+        </div>
         <div className="mt-3">
           <DeviceNote />
         </div>
+
+        {app.screenshots.length > 0 ? (
+          <div className="no-scrollbar -mx-4 mt-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1">
+            {app.screenshots.map((src, index) => (
+              <div
+                key={`${src}-${index}`}
+                className="w-[70%] max-w-[260px] shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-muted"
+              >
+                <img
+                  src={src}
+                  alt={`Captura de tela ${index + 1} de ${app.name}`}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[9/16] w-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        ) : null}
       </div>
+
+      <section className="mt-6 border-t border-border pt-6">
+        <h2 className="text-[15px] font-semibold tracking-tight text-foreground">
+          Sobre este app
+        </h2>
+        <p className="mt-3 text-sm leading-6 whitespace-pre-line text-foreground">
+          {app.description ?? app.tagline ?? 'Sem descrição disponível.'}
+        </p>
+      </section>
+
+      <section className="mt-6 border-t border-border pt-6">
+        <h2 className="text-[15px] font-semibold tracking-tight text-foreground">
+          Informações do aplicativo
+        </h2>
+        <dl className="mt-2">
+          {infoRows.map(([label, value]) => (
+            <div
+              key={label}
+              className="flex items-center justify-between gap-6 py-3"
+            >
+              <dt className="text-sm text-muted-foreground">{label}</dt>
+              <dd className="text-right text-sm tabular-nums text-foreground">
+                {value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
 
       <section className="mt-6 border-t border-border pt-6">
         <h2 className="text-lg font-medium tracking-tight text-foreground">
@@ -281,34 +338,6 @@ function AppDetailPage() {
             ))}
           </div>
         ) : null}
-      </section>
-
-      <section className="mt-6 border-t border-border pt-6">
-        <h2 className="text-[15px] font-semibold tracking-tight text-foreground">
-          Informações do aplicativo
-        </h2>
-        <dl className="mt-2">
-          {infoRows.map(([label, value]) => (
-            <div
-              key={label}
-              className="flex items-center justify-between gap-6 py-3"
-            >
-              <dt className="text-sm text-muted-foreground">{label}</dt>
-              <dd className="text-right text-sm tabular-nums text-foreground">
-                {value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section className="mt-6 border-t border-border pt-6">
-        <h2 className="text-[15px] font-semibold tracking-tight text-foreground">
-          Sobre este app
-        </h2>
-        <p className="mt-3 text-sm leading-6 whitespace-pre-line text-foreground">
-          {app.description ?? app.tagline ?? 'Sem descrição disponível.'}
-        </p>
       </section>
     </article>
   )

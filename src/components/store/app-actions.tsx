@@ -74,7 +74,7 @@ export function DeviceNote() {
   return (
     <p className="flex items-center justify-center gap-1.5 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
       <Info className="size-3.5" />
-      Este app está disponível para seu dispositivo
+      Este app está disponível para todos os seus dispositivos
     </p>
   )
 }
