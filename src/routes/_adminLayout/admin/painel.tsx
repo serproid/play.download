@@ -134,7 +134,7 @@ function AdminDashboard() {
           <Link
             to="/admin/apps"
             search={{ status: undefined }}
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand hover:underline"
+            className="inline-flex min-h-10 items-center gap-1 text-[11px] font-semibold text-brand hover:underline"
           >
             Gerenciar <ArrowUpRight className="size-3.5" />
           </Link>
@@ -215,7 +215,7 @@ function AdminDashboard() {
           </div>
           <Link
             to="/admin/usuarios"
-            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-brand px-4 text-xs font-bold text-brand-foreground"
+            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full bg-brand px-4 text-xs font-bold text-brand-foreground"
           >
             <Users className="size-4" />
             Gerenciar usuários

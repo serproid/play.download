@@ -40,12 +40,12 @@ export function BrandLogo({
   return (
     <Link
       to="/"
-      className={cn('flex items-center gap-2', className)}
+      className={cn('flex h-11 items-center gap-2', className)}
       aria-label="Google Play — página inicial"
     >
       <PlayLogo />
       {showName ? (
-        <span className="text-[21px] font-medium tracking-tight text-foreground/80">
+        <span className="text-[21px] font-medium tracking-tight text-[#5f6368] dark:text-[#9aa0a6]">
           Google Play
         </span>
       ) : null}

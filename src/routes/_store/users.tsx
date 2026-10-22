@@ -177,7 +177,7 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
                     <Link
                       to="/$slug"
                       params={{ slug: app.slug }}
-                      className="inline-flex items-center gap-0.5 text-[12px] font-medium text-brand hover:underline"
+                      className="inline-flex min-h-10 items-center gap-0.5 text-[12px] font-medium text-brand hover:underline"
                     >
                       Ver página
                       <ArrowUpRight className="size-3.5" />
@@ -185,7 +185,7 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
                     <Link
                       to="/meus-apps/$id"
                       params={{ id: app.id }}
-                      className="text-[12px] font-medium text-muted-foreground hover:text-foreground"
+                      className="inline-flex min-h-10 items-center text-[12px] font-medium text-muted-foreground hover:text-foreground"
                     >
                       Editar
                     </Link>

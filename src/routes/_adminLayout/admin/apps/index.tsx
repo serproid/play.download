@@ -93,7 +93,7 @@ function AdminAppsPage() {
         </div>
         <Link
           to="/admin/apps/novo"
-          className="inline-flex h-9 items-center gap-1.5 rounded-full bg-brand px-4 text-xs font-bold text-brand-foreground"
+          className="inline-flex h-10 items-center gap-1.5 rounded-full bg-brand px-4 text-xs font-bold text-brand-foreground"
         >
           <Plus className="size-4" />
           Novo app
@@ -107,7 +107,7 @@ function AdminAppsPage() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Buscar por nome, desenvolvedor ou autor..."
-            className="h-9 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-xs outline-none focus:border-brand/40 focus:ring-4 focus:ring-brand/10"
+            className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none focus:border-brand/40 focus:ring-4 focus:ring-brand/10"
           />
         </div>
         <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
@@ -121,7 +121,7 @@ function AdminAppsPage() {
                 key={tab.value}
                 onClick={() => changeFilter(tab.value)}
                 className={cn(
-                  'shrink-0 rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors',
+                  'min-h-10 shrink-0 rounded-full px-3 py-2.5 text-[11px] font-semibold transition-colors',
                   filter === tab.value
                     ? 'bg-brand text-brand-foreground'
                     : 'bg-muted text-muted-foreground hover:text-foreground',

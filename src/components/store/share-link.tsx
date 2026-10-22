@@ -57,7 +57,7 @@ export function CopyLinkButton({
         type="button"
         onClick={handleCopy}
         className={cn(
-          'inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
+          'inline-flex size-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
           className,
         )}
         aria-label={copied ? 'Link copiado' : 'Copiar link da página'}
@@ -77,7 +77,7 @@ export function CopyLinkButton({
       type="button"
       onClick={handleCopy}
       className={cn(
-        'inline-flex items-center gap-1 text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground',
+        'inline-flex min-h-10 items-center gap-1 text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground',
         className,
       )}
       aria-label="Copiar link da página"

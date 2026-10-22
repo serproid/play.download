@@ -77,7 +77,11 @@ export function UsersManager({ users }: { users: UserRow[] }) {
     })
   }, [users, query, roleFilter])
 
-  async function run(action: () => Promise<unknown>, message: string, id: string) {
+  async function run(
+    action: () => Promise<unknown>,
+    message: string,
+    id: string,
+  ) {
     setPendingId(id)
     try {
       await action()
@@ -113,7 +117,7 @@ export function UsersManager({ users }: { users: UserRow[] }) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Buscar por nome ou e-mail..."
-            className="h-9 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-xs outline-none focus:border-brand/40 focus:ring-4 focus:ring-brand/10"
+            className="h-11 w-full rounded-xl border border-border bg-background pl-9 pr-3 text-sm outline-none focus:border-brand/40 focus:ring-4 focus:ring-brand/10"
           />
         </div>
         <div className="flex gap-1.5">
@@ -126,7 +130,7 @@ export function UsersManager({ users }: { users: UserRow[] }) {
               key={value}
               onClick={() => setRoleFilter(value as typeof roleFilter)}
               className={cn(
-                'rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors',
+                'min-h-10 rounded-full px-3 py-2.5 text-[11px] font-semibold transition-colors',
                 roleFilter === value
                   ? 'bg-brand text-brand-foreground'
                   : 'bg-muted text-muted-foreground hover:text-foreground',
@@ -187,7 +191,7 @@ export function UsersManager({ users }: { users: UserRow[] }) {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="inline-flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+                        className="inline-flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
                         aria-label={`Ações de ${item.name}`}
                       >
                         <MoreVertical className="size-4" />
@@ -291,7 +295,9 @@ export function UsersManager({ users }: { users: UserRow[] }) {
       ) : (
         <div className="flex flex-col items-center rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center">
           <Users className="size-8 text-muted-foreground/50" />
-          <p className="mt-2 text-sm font-semibold">Nenhum usuário encontrado</p>
+          <p className="mt-2 text-sm font-semibold">
+            Nenhum usuário encontrado
+          </p>
           <p className="mt-1 text-xs text-muted-foreground">
             Ajuste a busca ou crie uma nova conta.
           </p>
@@ -339,7 +345,7 @@ function CreateUserDialog({ onCreated }: { onCreated: () => Promise<void> }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="inline-flex h-9 items-center gap-1.5 rounded-full bg-brand px-4 text-xs font-bold text-brand-foreground">
+        <button className="inline-flex h-10 items-center gap-1.5 rounded-full bg-brand px-4 text-xs font-bold text-brand-foreground">
           <UserPlus className="size-4" />
           Novo usuário
         </button>

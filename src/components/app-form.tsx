@@ -237,7 +237,7 @@ export function AppForm({
               <button
                 type="button"
                 onClick={() => iconInput.current?.click()}
-                className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-background px-3 text-[11px] font-semibold text-foreground hover:bg-accent"
+                className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border bg-background px-3 text-[11px] font-semibold text-foreground hover:bg-accent"
               >
                 {uploading === 'iconUrl' ? (
                   <Loader2 className="size-3.5 animate-spin" />
@@ -250,7 +250,7 @@ export function AppForm({
                 <button
                   type="button"
                   onClick={() => update('iconUrl', '')}
-                  className="inline-flex h-8 items-center gap-1 rounded-full px-2 text-[11px] font-medium text-muted-foreground hover:text-destructive"
+                  className="inline-flex h-10 items-center gap-1 rounded-full px-2 text-[11px] font-medium text-muted-foreground hover:text-destructive"
                 >
                   <X className="size-3.5" /> Remover
                 </button>
@@ -425,7 +425,7 @@ export function AppForm({
               <button
                 type="button"
                 onClick={() => fileInput.current?.click()}
-                className="inline-flex h-9 items-center gap-2 rounded-full bg-brand px-4 text-xs font-medium text-white"
+                className="inline-flex h-10 items-center gap-2 rounded-full bg-brand px-4 text-xs font-medium text-white"
               >
                 {uploading === 'file' ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -442,7 +442,7 @@ export function AppForm({
                     update('fileName', '')
                     update('fileSize', null)
                   }}
-                  className="inline-flex h-9 items-center gap-1 rounded-full px-2 text-xs font-medium text-[#5f6368] hover:text-destructive"
+                  className="inline-flex h-10 items-center gap-1 rounded-full px-2 text-xs font-medium text-[#5f6368] hover:text-destructive"
                 >
                   <X className="size-3.5" /> Remover
                 </button>
@@ -460,7 +460,7 @@ export function AppForm({
               </p>
             )}
             <Input
-              className="mt-2 h-9 bg-card text-xs"
+              className="mt-2 h-11 bg-card text-sm"
               value={form.fileUrl}
               onChange={(event) => update('fileUrl', event.target.value)}
               placeholder="https://.../arquivo.apk"

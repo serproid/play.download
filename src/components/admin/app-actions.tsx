@@ -51,7 +51,7 @@ export function AdminAppActions({ app }: { app: AdminApp }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
           aria-label={`Ações de ${app.name}`}
           disabled={pending}
         >
@@ -69,7 +69,8 @@ export function AdminAppActions({ app }: { app: AdminApp }) {
             onSelect={() => {
               setPending(true)
               void run(
-                () => adminSetStatus({ data: { id: app.id, status: 'published' } }),
+                () =>
+                  adminSetStatus({ data: { id: app.id, status: 'published' } }),
                 'App publicado.',
                 refresh,
               ).finally(() => setPending(false))
@@ -83,7 +84,8 @@ export function AdminAppActions({ app }: { app: AdminApp }) {
             onSelect={() => {
               setPending(true)
               void run(
-                () => adminSetStatus({ data: { id: app.id, status: 'rejected' } }),
+                () =>
+                  adminSetStatus({ data: { id: app.id, status: 'rejected' } }),
                 'App rejeitado.',
                 refresh,
               ).finally(() => setPending(false))
@@ -158,7 +160,7 @@ export function ApproveRejectActions({ app }: { app: AdminApp }) {
       <button
         onClick={() => act('published')}
         disabled={pending}
-        className="inline-flex h-8 items-center gap-1 rounded-full bg-brand px-3 text-[11px] font-bold text-brand-foreground disabled:opacity-60"
+        className="inline-flex h-10 items-center gap-1 rounded-full bg-brand px-3 text-[11px] font-bold text-brand-foreground disabled:opacity-60"
       >
         <Check className="size-3.5" />
         Aprovar
@@ -166,7 +168,7 @@ export function ApproveRejectActions({ app }: { app: AdminApp }) {
       <button
         onClick={() => act('rejected')}
         disabled={pending}
-        className="inline-flex h-8 items-center gap-1 rounded-full border border-border px-3 text-[11px] font-semibold text-muted-foreground hover:text-destructive disabled:opacity-60"
+        className="inline-flex h-10 items-center gap-1 rounded-full border border-border px-3 text-[11px] font-semibold text-muted-foreground hover:text-destructive disabled:opacity-60"
       >
         Rejeitar
       </button>

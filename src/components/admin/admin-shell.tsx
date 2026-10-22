@@ -140,7 +140,7 @@ export function AdminShell({
         <Sheet>
           <SheetTrigger asChild>
             <button
-              className="inline-flex size-9 items-center justify-center rounded-full hover:bg-accent"
+              className="inline-flex size-10 items-center justify-center rounded-full hover:bg-accent"
               aria-label="Abrir menu"
             >
               <Menu className="size-5" />
