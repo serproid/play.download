@@ -127,11 +127,11 @@ O projeto já está configurado com o adapter oficial:
 
 No painel da Cloudflare (Workers Builds) use:
 
-| Configuração   | Valor                 |
-| -------------- | --------------------- |
-| Build command  | `npm run build`       |
-| Deploy command | `npx wrangler deploy` |
-| Node version   | 22                    |
+| Configuração   | Valor            |
+| -------------- | ---------------- |
+| Build command  | `npm run build`  |
+| Deploy command | `npm run deploy` |
+| Node version   | 22               |
 
 > O nome do Worker está como `play-download` no `wrangler.jsonc`. Se o Worker já existente tiver outro nome, ajuste esse campo para não criar um Worker novo.
 
