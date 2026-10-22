@@ -156,7 +156,7 @@ function AdminAppsPage() {
                       <Link
                         to="/admin/apps/$id"
                         params={{ id: app.id }}
-                        className="truncate text-xs font-semibold text-foreground hover:text-brand"
+                        className="inline-flex min-h-10 items-center truncate text-xs font-semibold text-foreground hover:text-brand"
                       >
                         {app.name}
                       </Link>

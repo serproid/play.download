@@ -185,7 +185,7 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
                     <Link
                       to="/meus-apps/$id"
                       params={{ id: app.id }}
-                      className="inline-flex min-h-10 items-center text-[12px] font-medium text-muted-foreground hover:text-foreground"
+                      className="inline-flex min-h-10 items-center px-2 text-[12px] font-medium text-muted-foreground hover:text-foreground"
                     >
                       Editar
                     </Link>
