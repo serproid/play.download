@@ -128,7 +128,9 @@ export const apps = pgTable(
     }),
     iconUrl: text('icon_url'),
     bannerUrl: text('banner_url'),
-    screenshots: text('screenshots').array().default(sql`'{}'::text[]`),
+    screenshots: text('screenshots')
+      .array()
+      .default(sql`'{}'::text[]`),
     fileUrl: text('file_url'),
     fileName: text('file_name'),
     fileSize: bigint('file_size', { mode: 'number' }),
@@ -183,23 +185,6 @@ export const reviews = pgTable(
   ],
 )
 
-export const wishlist = pgTable(
-  'wishlist',
-  {
-    id: uuid('id').primaryKey().defaultRandom(),
-    appId: uuid('app_id')
-      .notNull()
-      .references(() => apps.id, { onDelete: 'cascade' }),
-    userId: text('user_id')
-      .notNull()
-      .references(() => user.id, { onDelete: 'cascade' }),
-    createdAt: timestamp('created_at', { withTimezone: true })
-      .defaultNow()
-      .notNull(),
-  },
-  (table) => [uniqueIndex('wishlist_app_user_idx').on(table.appId, table.userId)],
-)
-
 export const downloads = pgTable(
   'downloads',
   {
@@ -217,6 +202,3 @@ export const downloads = pgTable(
 
 export type AppType = (typeof appTypeEnum.enumValues)[number]
 export type AppStatus = (typeof appStatusEnum.enumValues)[number]
-export type AppRecord = typeof apps.$inferSelect
-export type CategoryRecord = typeof categories.$inferSelect
-export type ReviewRecord = typeof reviews.$inferSelect

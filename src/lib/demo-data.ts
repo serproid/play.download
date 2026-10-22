@@ -1,14 +1,44 @@
-import type { AppDetail, CatalogApp, HomeData, ReviewItem } from './types'
+import type { AppDetail, CatalogApp, ReviewItem } from './types'
 
 export const demoCategories = [
-  { id: 'cat-vendas', name: 'Vendas e Negócios', slug: 'vendas-e-negocios', type: 'app' as const },
-  { id: 'cat-comunicacao', name: 'Comunicação', slug: 'comunicacao', type: 'app' as const },
-  { id: 'cat-fotografia', name: 'Fotografia', slug: 'fotografia', type: 'app' as const },
-  { id: 'cat-musica', name: 'Música e Áudio', slug: 'musica-e-audio', type: 'app' as const },
+  {
+    id: 'cat-vendas',
+    name: 'Vendas e Negócios',
+    slug: 'vendas-e-negocios',
+    type: 'app' as const,
+  },
+  {
+    id: 'cat-comunicacao',
+    name: 'Comunicação',
+    slug: 'comunicacao',
+    type: 'app' as const,
+  },
+  {
+    id: 'cat-fotografia',
+    name: 'Fotografia',
+    slug: 'fotografia',
+    type: 'app' as const,
+  },
+  {
+    id: 'cat-musica',
+    name: 'Música e Áudio',
+    slug: 'musica-e-audio',
+    type: 'app' as const,
+  },
   { id: 'cat-acao', name: 'Ação', slug: 'acao', type: 'game' as const },
-  { id: 'cat-corrida', name: 'Corrida', slug: 'corrida', type: 'game' as const },
+  {
+    id: 'cat-corrida',
+    name: 'Corrida',
+    slug: 'corrida',
+    type: 'game' as const,
+  },
   { id: 'cat-drama', name: 'Drama', slug: 'drama', type: 'movie' as const },
-  { id: 'cat-negocios', name: 'Negócios', slug: 'negocios', type: 'book' as const },
+  {
+    id: 'cat-negocios',
+    name: 'Negócios',
+    slug: 'negocios',
+    type: 'book' as const,
+  },
 ]
 
 const base = (
@@ -236,7 +266,14 @@ export function getDemoAppBySlug(slug: string): AppDetail | null {
     distribution[4] = Math.round(reviewCount * 0.12)
     distribution[3] = Math.round(reviewCount * 0.04)
     distribution[2] = Math.round(reviewCount * 0.015)
-    distribution[1] = Math.max(0, reviewCount - distribution[5] - distribution[4] - distribution[3] - distribution[2])
+    distribution[1] = Math.max(
+      0,
+      reviewCount -
+        distribution[5] -
+        distribution[4] -
+        distribution[3] -
+        distribution[2],
+    )
   }
 
   return {
@@ -252,22 +289,6 @@ export function getDemoAppBySlug(slug: string): AppDetail | null {
     categoryId: null,
     reviews,
     distribution,
-    userReview: null,
-    inWishlist: false,
     submittedBy: null,
-  }
-}
-
-export function getDemoHomeData(): HomeData {
-  return {
-    featured: demoApps.filter((app) => app.featured),
-    popular: [...demoApps].sort((a, b) => b.downloads - a.downloads).slice(0, 6),
-    recent: [...demoApps].slice(0, 8),
-    byType: {
-      app: demoApps.filter((app) => app.type === 'app'),
-      game: demoApps.filter((app) => app.type === 'game'),
-      movie: demoApps.filter((app) => app.type === 'movie'),
-      book: demoApps.filter((app) => app.type === 'book'),
-    },
   }
 }

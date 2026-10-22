@@ -49,20 +49,10 @@ export type AppDetail = CatalogApp & {
   categoryId: string | null
   reviews: ReviewItem[]
   distribution: Record<1 | 2 | 3 | 4 | 5, number>
-  userReview: ReviewItem | null
-  inWishlist: boolean
   submittedBy: string | null
 }
 
-export type HomeData = {
-  featured: CatalogApp[]
-  popular: CatalogApp[]
-  recent: CatalogApp[]
-  byType: Record<AppType, CatalogApp[]>
-}
-
 export type MySpaceData = {
-  wishlist: CatalogApp[]
   submissions: CatalogApp[]
 }
 

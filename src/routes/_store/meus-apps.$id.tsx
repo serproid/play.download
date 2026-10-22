@@ -1,4 +1,9 @@
-import { createFileRoute, Link, notFound, redirect } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  Link,
+  notFound,
+  redirect,
+} from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
 import { AppForm } from '@/components/app-form'
 import { getMyApp, listCategories } from '@/lib/apps.functions'
@@ -51,9 +56,11 @@ function EditMyAppPage() {
           <ArrowLeft className="size-4" />
           Minha conta
         </Link>
-        <h1 className="text-[22px] font-normal text-foreground">Editar app</h1>
-        <p className="mt-1 text-sm text-[#5f6368] dark:text-[#9aa0a6]">
-          Personalize a página do seu produto.
+        <h1 className="text-[26px] font-medium tracking-tight text-foreground">
+          Editar página
+        </h1>
+        <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+          Personalize a página do seu app. O link de acesso continua o mesmo.
         </p>
       </header>
 

@@ -18,18 +18,18 @@ export const Route = createRootRoute({
           'width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5',
       },
       {
-        title: 'Play Download — apps, jogos, filmes e livros',
+        title: 'Play Download — a página do seu app',
       },
       {
         name: 'description',
         content:
-          'Baixe apps, jogos, filmes e livros em um só lugar. Descubra, avalie e compartilhe seus títulos favoritos.',
+          'Crie a página do seu app e receba um link exclusivo para divulgar. Cada app tem seu próprio espaço, isolado e personalizado.',
       },
-      { name: 'theme-color', content: '#0d8a4f' },
+      { name: 'theme-color', content: '#01875f' },
       { property: 'og:title', content: 'Play Download' },
       {
         property: 'og:description',
-        content: 'Seus apps, jogos, filmes e livros em um só lugar.',
+        content: 'A página do seu app, com link exclusivo para divulgar.',
       },
       { property: 'og:type', content: 'website' },
     ],
@@ -66,15 +66,15 @@ function RootNotFound() {
       <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-soft text-brand">
         <PackageOpen className="size-6" />
       </div>
-      <h1 className="mt-4 text-xl font-bold text-foreground">
+      <h1 className="mt-4 text-xl font-medium tracking-tight text-foreground">
         Página não encontrada
       </h1>
-      <p className="mt-1 max-w-xs text-xs leading-5 text-muted-foreground">
+      <p className="mt-1 max-w-xs text-sm leading-6 text-muted-foreground">
         O endereço que você tentou acessar não existe ou foi movido.
       </p>
       <Link
         to="/"
-        className="mt-4 rounded-full bg-brand px-5 py-2 text-xs font-bold text-brand-foreground"
+        className="mt-4 rounded-full bg-brand px-5 py-2 text-[13px] font-medium text-brand-foreground"
       >
         Voltar para o início
       </Link>
@@ -93,22 +93,22 @@ function RootError({ error }: { error: unknown }) {
       <div className="flex size-14 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
         <PackageOpen className="size-6" />
       </div>
-      <h1 className="mt-4 text-xl font-bold text-foreground">
+      <h1 className="mt-4 text-xl font-medium tracking-tight text-foreground">
         Algo deu errado
       </h1>
-      <p className="mt-1 max-w-sm text-xs leading-5 text-muted-foreground">
+      <p className="mt-1 max-w-sm text-sm leading-6 text-muted-foreground">
         {message}
       </p>
       <div className="mt-4 flex gap-2">
         <button
           onClick={() => window.location.reload()}
-          className="rounded-full bg-brand px-5 py-2 text-xs font-bold text-brand-foreground"
+          className="rounded-full bg-brand px-5 py-2 text-[13px] font-medium text-brand-foreground"
         >
           Tentar novamente
         </button>
         <a
           href="/"
-          className="rounded-full border border-border bg-card px-5 py-2 text-xs font-semibold text-foreground"
+          className="rounded-full border border-border bg-card px-5 py-2 text-[13px] font-medium text-foreground"
         >
           Início
         </a>

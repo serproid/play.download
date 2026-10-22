@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
-import { Loader2, PlusCircle } from 'lucide-react'
+import { ArrowUpRight, Loader2, PlusCircle } from 'lucide-react'
 import { useState } from 'react'
-import { AppGridCard, AppRankRow } from '@/components/store/app-cards'
-import { SectionHeader } from '@/components/store/section'
+import { AppIcon } from '@/components/store/app-icon'
+import { CopyLinkButton } from '@/components/store/share-link'
 import { UserAuthPanel } from '@/components/user-auth-panel'
 import { getMySpace } from '@/lib/apps.functions'
 import { authClient } from '@/lib/auth-client'
@@ -49,10 +49,12 @@ function UsersPage() {
   if (!user) {
     return (
       <div className="mx-auto w-full max-w-[380px] py-10">
-        <h1 className="text-[22px] font-normal text-foreground">Sua conta</h1>
-        <p className="mt-1 text-sm text-[#5f6368] dark:text-[#9aa0a6]">
-          Entre ou crie uma conta para avaliar apps, salvar favoritos e enviar
-          publicações.
+        <h1 className="text-[28px] font-medium tracking-tight text-foreground">
+          Crie a página do seu app
+        </h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          Entre ou crie uma conta para publicar seu app e compartilhar uma
+          página exclusiva com quem quiser.
         </p>
         <div className="mt-6">
           <UserAuthPanel redirectTo={redirect} initialMode={mode} />
@@ -61,9 +63,7 @@ function UsersPage() {
     )
   }
 
-  return (
-    <Account data={data ?? { wishlist: [], submissions: [] }} user={user} />
-  )
+  return <Account data={data ?? { submissions: [] }} user={user} />
 }
 
 function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
@@ -86,8 +86,8 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
   }
 
   return (
-    <div className="space-y-7 py-2">
-      <section className="border-b border-border pb-5">
+    <div className="space-y-8 py-2">
+      <section className="border-b border-border pb-6">
         <div className="flex items-center gap-4">
           <span className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand text-xl font-medium text-white">
             {user.image ? (
@@ -101,27 +101,27 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
             )}
           </span>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-xl font-normal text-foreground">
+            <h1 className="truncate text-2xl font-medium tracking-tight text-foreground">
               {user.name}
             </h1>
-            <p className="truncate text-sm text-[#5f6368] dark:text-[#9aa0a6]">
+            <p className="truncate text-sm text-muted-foreground">
               {user.email}
             </p>
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="mt-5 flex flex-wrap items-center gap-2">
           <Link
             to="/adicionar"
-            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-brand px-4 text-[13px] font-medium text-white"
+            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-brand px-4 text-[13px] font-medium text-brand-foreground"
           >
             <PlusCircle className="size-4" />
-            Adicionar app
+            Criar página de app
           </Link>
           {isAdmin ? (
             <Link
               to="/admin/painel"
-              className="inline-flex h-9 items-center rounded-full border border-border px-4 text-[13px] font-medium text-brand"
+              className="inline-flex h-10 items-center rounded-full border border-border px-4 text-[13px] font-medium text-brand"
             >
               Painel administrativo
             </Link>
@@ -129,62 +129,83 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
           <button
             onClick={signOut}
             disabled={pending}
-            className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium text-[#5f6368] hover:text-foreground disabled:opacity-60 dark:text-[#9aa0a6]"
+            className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px] font-medium text-muted-foreground hover:text-foreground disabled:opacity-60"
           >
             {pending ? <Loader2 className="size-4 animate-spin" /> : null}
             Sair
           </button>
         </div>
-
-        <p className="mt-3 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-          {data.wishlist.length} na lista de desejos · {data.submissions.length}{' '}
-          apps enviados
-        </p>
       </section>
 
       <section>
-        <SectionHeader title="Lista de desejos" />
-        {data.wishlist.length > 0 ? (
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {data.wishlist.map((app) => (
-              <AppGridCard key={app.id} app={app} />
-            ))}
-          </div>
-        ) : (
-          <p className="py-3 text-sm text-[#5f6368] dark:text-[#9aa0a6]">
-            Sua lista está vazia.
-          </p>
-        )}
-      </section>
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="text-lg font-medium tracking-tight text-foreground">
+            Minhas páginas
+          </h2>
+          <span className="text-xs text-muted-foreground">
+            {data.submissions.length}{' '}
+            {data.submissions.length === 1 ? 'app' : 'apps'}
+          </span>
+        </div>
 
-      <section>
-        <SectionHeader title="Meus envios" />
         {data.submissions.length > 0 ? (
-          <div className="divide-y divide-border">
+          <div className="mt-3 divide-y divide-border">
             {data.submissions.map((app) => (
-              <div key={app.id} className="py-2">
-                <div className="flex items-center justify-end gap-3">
-                  <Link
-                    to="/meus-apps/$id"
-                    params={{ id: app.id }}
-                    className="text-[11px] font-medium text-brand hover:underline"
-                  >
-                    Editar
-                  </Link>
+              <div key={app.id} className="flex items-center gap-3 py-4">
+                <AppIcon name={app.name} iconUrl={app.iconUrl} size="sm" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[15px] font-medium text-foreground">
+                    {app.name}
+                  </p>
+                  <p className="truncate text-[13px] text-muted-foreground">
+                    {app.tagline ?? app.categoryName ?? 'Página do app'}
+                  </p>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1.5">
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusClasses[app.status]}`}
                   >
                     {statusLabels[app.status]}
                   </span>
+                  <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
+                    <CopyLinkButton slug={app.slug} />
+                    <Link
+                      to="/$slug"
+                      params={{ slug: app.slug }}
+                      className="inline-flex items-center gap-0.5 text-[12px] font-medium text-brand hover:underline"
+                    >
+                      Ver página
+                      <ArrowUpRight className="size-3.5" />
+                    </Link>
+                    <Link
+                      to="/meus-apps/$id"
+                      params={{ id: app.id }}
+                      className="text-[12px] font-medium text-muted-foreground hover:text-foreground"
+                    >
+                      Editar
+                    </Link>
+                  </div>
                 </div>
-                <AppRankRow app={app} />
               </div>
             ))}
           </div>
         ) : (
-          <p className="py-3 text-sm text-[#5f6368] dark:text-[#9aa0a6]">
-            Nenhum app enviado ainda.
-          </p>
+          <div className="mt-3 rounded-2xl border border-dashed border-border px-5 py-8 text-center">
+            <p className="text-sm font-medium text-foreground">
+              Você ainda não tem uma página
+            </p>
+            <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
+              Envie seu app para criar uma página própria, com link exclusivo e
+              isolado dos demais.
+            </p>
+            <Link
+              to="/adicionar"
+              className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-full bg-brand px-4 text-[13px] font-medium text-brand-foreground"
+            >
+              <PlusCircle className="size-4" />
+              Criar minha página
+            </Link>
+          </div>
         )}
       </section>
     </div>

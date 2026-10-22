@@ -14,11 +14,7 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  adminSaveApp,
-  submitApp,
-  updateMyApp,
-} from '@/lib/apps.functions'
+import { adminSaveApp, submitApp, updateMyApp } from '@/lib/apps.functions'
 import type { AdminApp, AppInput } from '@/lib/types'
 import type { AppStatus, AppType } from '@/lib/db/schema'
 import { cn, formatFileSize } from '@/lib/utils'
@@ -182,21 +178,17 @@ export function AppForm({
           search: { status: undefined },
         })
       } else if (initial) {
-        await updateMyApp({ data: { ...payload, id: initial.id } })
-        toast.success('App atualizado.')
-        await router.invalidate()
-        await router.navigate({
-          to: '/users',
-          search: { redirect: undefined, mode: undefined },
+        const { slug } = await updateMyApp({
+          data: { ...payload, id: initial.id },
         })
+        toast.success('Página atualizada.')
+        await router.invalidate()
+        await router.navigate({ to: '/$slug', params: { slug } })
       } else {
-        await submitApp({ data: payload })
-        toast.success('App enviado! Ele será analisado pela nossa equipe.')
+        const { slug } = await submitApp({ data: payload })
+        toast.success('Página criada! Copie o link e divulgue.')
         await router.invalidate()
-        await router.navigate({
-          to: '/users',
-          search: { redirect: undefined, mode: undefined },
-        })
+        await router.navigate({ to: '/$slug', params: { slug } })
       }
     } catch (error) {
       toast.error(
@@ -504,7 +496,9 @@ export function AppForm({
             ? initial
               ? 'Salvar alterações'
               : 'Criar app'
-            : 'Enviar para análise'}
+            : initial
+              ? 'Salvar página'
+              : 'Criar minha página'}
         </button>
       </div>
     </form>

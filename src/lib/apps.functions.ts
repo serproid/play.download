@@ -1,8 +1,13 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
-import { and, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm'
+import { and, desc, eq, ilike, or, sql } from 'drizzle-orm'
 import { auth } from './auth'
-import { hasAdminRole, isDemoMode, requireAdmin, requireUser } from './auth.functions'
+import {
+  hasAdminRole,
+  isDemoMode,
+  requireAdmin,
+  requireUser,
+} from './auth.functions'
 import { db } from './db'
 import {
   apps,
@@ -10,23 +15,16 @@ import {
   downloads,
   reviews,
   user,
-  wishlist,
   type AppStatus,
   type AppType,
 } from './db/schema'
-import {
-  demoApps,
-  demoCategories,
-  getDemoAppBySlug,
-  getDemoHomeData,
-} from './demo-data'
+import { demoCategories, getDemoAppBySlug } from './demo-data'
 import type {
   AdminApp,
   AdminStats,
   AppDetail,
   AppInput,
   CatalogApp,
-  HomeData,
   MySpaceData,
   UserRow,
 } from './types'
@@ -107,8 +105,22 @@ function slugify(value: string) {
   )
 }
 
+const reservedSlugs = new Set([
+  'admin',
+  'api',
+  'users',
+  'adicionar',
+  'meus-apps',
+  'app',
+  'assets',
+  'favicon.ico',
+  'robots.txt',
+  'sitemap.xml',
+])
+
 async function uniqueSlug(name: string, ignoreId?: string) {
-  const base = slugify(name)
+  const raw = slugify(name)
+  const base = reservedSlugs.has(raw) ? `app-${raw}` : raw
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const candidate = attempt === 0 ? base : `${base}-${attempt + 1}`
     const existing = await db
@@ -121,94 +133,14 @@ async function uniqueSlug(name: string, ignoreId?: string) {
   return `${base}-${Date.now().toString(36)}`
 }
 
-async function fetchPublished(type?: AppType) {
-  const rows = await db
-    .select(catalogSelection)
-    .from(apps)
-    .leftJoin(categories, eq(apps.categoryId, categories.id))
-    .where(
-      and(
-        eq(apps.status, 'published'),
-        type ? eq(apps.type, type) : undefined,
-      ),
-    )
-    .orderBy(desc(apps.featured), desc(apps.downloads))
-    .limit(120)
-  return rows.map(toCatalogApp)
-}
-
-export const listCategories = createServerFn({ method: 'GET' }).handler(async () => {
-  if (isDemoMode()) return demoCategories
-  const rows = await db.select().from(categories).orderBy(categories.name)
-  return rows.map((row) => ({ ...row, createdAt: row.createdAt.toISOString() }))
-})
-
-export const listApps = createServerFn({ method: 'GET' })
-  .validator(
-    (input: { type?: AppType; q?: string; category?: string; limit?: number }) =>
-      input,
-  )
-  .handler(async ({ data }) => {
-    if (isDemoMode()) {
-      const query = data.q?.trim().toLowerCase()
-      return demoApps
-        .filter((app) => (data.type ? app.type === data.type : true))
-        .filter((app) =>
-          query
-            ? `${app.name} ${app.tagline ?? ''}`.toLowerCase().includes(query)
-            : true,
-        )
-        .filter((app) =>
-          data.category ? app.categoryName === data.category : true,
-        )
-        .slice(0, data.limit ?? 60)
-    }
-
-    const query = data.q?.trim()
-    const categorySlug = data.category?.trim()
-
-    const rows = await db
-      .select(catalogSelection)
-      .from(apps)
-      .leftJoin(categories, eq(apps.categoryId, categories.id))
-      .where(
-        and(
-          eq(apps.status, 'published'),
-          data.type ? eq(apps.type, data.type) : undefined,
-          query
-            ? or(
-                ilike(apps.name, `%${query}%`),
-                ilike(apps.tagline, `%${query}%`),
-                ilike(apps.developer, `%${query}%`),
-              )
-            : undefined,
-          categorySlug ? eq(categories.slug, categorySlug) : undefined,
-        ),
-      )
-      .orderBy(desc(apps.featured), desc(apps.downloads))
-      .limit(data.limit ?? 60)
-
-    return rows.map(toCatalogApp)
-  })
-
-export const getHomeData = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<HomeData> => {
-    if (isDemoMode()) return getDemoHomeData()
-
-    const all = await fetchPublished()
-    return {
-      featured: all.filter((app) => app.featured).slice(0, 5),
-      popular: [...all].sort((a, b) => b.downloads - a.downloads).slice(0, 6),
-      recent: [...all]
-        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-        .slice(0, 8),
-      byType: {
-        app: all.filter((app) => app.type === 'app').slice(0, 8),
-        game: all.filter((app) => app.type === 'game').slice(0, 8),
-        movie: all.filter((app) => app.type === 'movie').slice(0, 8),
-        book: all.filter((app) => app.type === 'book').slice(0, 8),
-      },
-    }
+export const listCategories = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    if (isDemoMode()) return demoCategories
+    const rows = await db.select().from(categories).orderBy(categories.name)
+    return rows.map((row) => ({
+      ...row,
+      createdAt: row.createdAt.toISOString(),
+    }))
   },
 )
 
@@ -243,7 +175,14 @@ export const getAppDetail = createServerFn({ method: 'GET' })
       })
       .from(apps)
       .leftJoin(categories, eq(apps.categoryId, categories.id))
-      .where(and(eq(apps.slug, data.slug), eq(apps.status, 'published')))
+      .where(
+        and(
+          eq(apps.slug, data.slug),
+          userId
+            ? or(eq(apps.status, 'published'), eq(apps.submittedBy, userId))
+            : eq(apps.status, 'published'),
+        ),
+      )
       .limit(1)
 
     if (!row) return null
@@ -257,7 +196,6 @@ export const getAppDetail = createServerFn({ method: 'GET' })
         helpfulCount: reviews.helpfulCount,
         userName: user.name,
         userImage: user.image,
-        userId: reviews.userId,
       })
       .from(reviews)
       .innerJoin(user, eq(reviews.userId, user.id))
@@ -271,20 +209,6 @@ export const getAppDetail = createServerFn({ method: 'GET' })
       distribution[key] += 1
     }
 
-    let inWishlist = false
-    if (userId) {
-      const [wish] = await db
-        .select({ id: wishlist.id })
-        .from(wishlist)
-        .where(and(eq(wishlist.appId, row.id), eq(wishlist.userId, userId)))
-        .limit(1)
-      inWishlist = Boolean(wish)
-    }
-
-    const userReview = userId
-      ? (reviewRows.find((review) => review.userId === userId) ?? null)
-      : null
-
     return {
       ...toCatalogApp(row),
       description: row.description,
@@ -297,7 +221,6 @@ export const getAppDetail = createServerFn({ method: 'GET' })
       fileSize: row.fileSize,
       categoryId: row.categoryId,
       submittedBy: row.submittedBy,
-      inWishlist,
       distribution,
       reviews: reviewRows.map((review) => ({
         id: review.id,
@@ -308,31 +231,12 @@ export const getAppDetail = createServerFn({ method: 'GET' })
         userName: review.userName,
         userImage: review.userImage,
       })),
-      userReview: userReview
-        ? {
-            id: userReview.id,
-            rating: userReview.rating,
-            comment: userReview.comment,
-            createdAt: userReview.createdAt.toISOString(),
-            helpfulCount: userReview.helpfulCount,
-            userName: userReview.userName,
-            userImage: userReview.userImage,
-          }
-        : null,
     }
   })
 
 export const getMySpace = createServerFn({ method: 'GET' }).handler(
   async (): Promise<MySpaceData> => {
     const session = await requireUser()
-
-    const wishRows = await db
-      .select(catalogSelection)
-      .from(wishlist)
-      .innerJoin(apps, eq(wishlist.appId, apps.id))
-      .leftJoin(categories, eq(apps.categoryId, categories.id))
-      .where(and(eq(wishlist.userId, session.user.id), eq(apps.status, 'published')))
-      .orderBy(desc(wishlist.createdAt))
 
     const submissionRows = await db
       .select(catalogSelection)
@@ -342,7 +246,6 @@ export const getMySpace = createServerFn({ method: 'GET' }).handler(
       .orderBy(desc(apps.createdAt))
 
     return {
-      wishlist: wishRows.map(toCatalogApp),
       submissions: submissionRows.map(toCatalogApp),
     }
   },
@@ -385,85 +288,6 @@ export const submitApp = createServerFn({ method: 'POST' })
     })
 
     return { slug }
-  })
-
-export const saveReview = createServerFn({ method: 'POST' })
-  .validator(
-    (input: { appId: string; rating: number; comment: string }) => input,
-  )
-  .handler(async ({ data }) => {
-    const session = await requireUser()
-    const rating = Math.min(5, Math.max(1, Math.round(data.rating)))
-
-    const [app] = await db
-      .select({ id: apps.id })
-      .from(apps)
-      .where(and(eq(apps.id, data.appId), eq(apps.status, 'published')))
-      .limit(1)
-
-    if (!app) throw new Error('App não encontrado.')
-
-    const comment = normalizeText(data.comment)
-
-    await db
-      .insert(reviews)
-      .values({
-        appId: data.appId,
-        userId: session.user.id,
-        rating,
-        comment,
-      })
-      .onConflictDoUpdate({
-        target: [reviews.appId, reviews.userId],
-        set: { rating, comment, updatedAt: new Date() },
-      })
-
-    const [aggregate] = await db
-      .select({
-        average: sql<number>`coalesce(avg(${reviews.rating}), 0)`,
-        count: sql<number>`count(*)::int`,
-      })
-      .from(reviews)
-      .where(eq(reviews.appId, data.appId))
-
-    await db
-      .update(apps)
-      .set({
-        rating: Math.round(Number(aggregate?.average ?? 0) * 10) / 10,
-        reviewCount: Number(aggregate?.count ?? 0),
-      })
-      .where(eq(apps.id, data.appId))
-
-    return { ok: true }
-  })
-
-export const toggleWishlist = createServerFn({ method: 'POST' })
-  .validator((input: { appId: string }) => input)
-  .handler(async ({ data }) => {
-    const session = await requireUser()
-
-    const [existing] = await db
-      .select({ id: wishlist.id })
-      .from(wishlist)
-      .where(
-        and(
-          eq(wishlist.appId, data.appId),
-          eq(wishlist.userId, session.user.id),
-        ),
-      )
-      .limit(1)
-
-    if (existing) {
-      await db.delete(wishlist).where(eq(wishlist.id, existing.id))
-      return { inWishlist: false }
-    }
-
-    await db
-      .insert(wishlist)
-      .values({ appId: data.appId, userId: session.user.id })
-      .onConflictDoNothing()
-
-    return { inWishlist: true }
   })
 
 export const adminListApps = createServerFn({ method: 'GET' }).handler(
@@ -579,9 +403,7 @@ export const getMyApp = createServerFn({ method: 'GET' })
       .from(apps)
       .leftJoin(categories, eq(apps.categoryId, categories.id))
       .leftJoin(user, eq(apps.submittedBy, user.id))
-      .where(
-        and(eq(apps.id, data.id), eq(apps.submittedBy, session.user.id)),
-      )
+      .where(and(eq(apps.id, data.id), eq(apps.submittedBy, session.user.id)))
       .limit(1)
 
     if (!row) return null
@@ -609,13 +431,13 @@ export const updateMyApp = createServerFn({ method: 'POST' })
     const session = await requireUser()
 
     const [existing] = await db
-      .select({ submittedBy: apps.submittedBy })
+      .select({ submittedBy: apps.submittedBy, slug: apps.slug })
       .from(apps)
       .where(eq(apps.id, data.id))
       .limit(1)
 
     if (!existing || existing.submittedBy !== session.user.id) {
-      throw new Error('Voc? s? pode editar os apps que enviou.')
+      throw new Error('Você só pode editar as páginas que criou.')
     }
 
     if (!data.name?.trim()) throw new Error('Informe o nome do app.')
@@ -642,7 +464,7 @@ export const updateMyApp = createServerFn({ method: 'POST' })
       })
       .where(eq(apps.id, data.id))
 
-    return { id: data.id }
+    return { id: data.id, slug: existing.slug }
   })
 
 async function persistApp(
@@ -674,10 +496,7 @@ async function persistApp(
   }
 
   if (data.id) {
-    await db
-      .update(apps)
-      .set(values)
-      .where(eq(apps.id, data.id))
+    await db.update(apps).set(values).where(eq(apps.id, data.id))
     return { id: data.id }
   }
 
@@ -709,7 +528,10 @@ export const adminSetStatus = createServerFn({ method: 'POST' })
   .validator((input: { id: string; status: AppStatus }) => input)
   .handler(async ({ data }) => {
     await requireAdmin()
-    await db.update(apps).set({ status: data.status }).where(eq(apps.id, data.id))
+    await db
+      .update(apps)
+      .set({ status: data.status })
+      .where(eq(apps.id, data.id))
     return { ok: true }
   })
 
@@ -793,12 +615,8 @@ export const adminListUsers = createServerFn({ method: 'GET' })
 
 export const adminCreateUser = createServerFn({ method: 'POST' })
   .validator(
-    (input: {
-      name: string
-      email: string
-      password: string
-      role: string
-    }) => input,
+    (input: { name: string; email: string; password: string; role: string }) =>
+      input,
   )
   .handler(async ({ data }) => {
     await requireAdmin()
@@ -837,7 +655,10 @@ export const adminBanUser = createServerFn({ method: 'POST' })
       throw new Error('Você não pode bloquear a si mesmo.')
     }
     await auth.api.banUser({
-      body: { userId: data.userId, banReason: data.banReason || 'Violação dos termos' },
+      body: {
+        userId: data.userId,
+        banReason: data.banReason || 'Violação dos termos',
+      },
       headers: getRequestHeaders(),
     })
     return { ok: true }
@@ -892,40 +713,6 @@ export const registerDownload = createServerFn({ method: 'POST' })
       .where(eq(apps.id, app.id))
 
     return { ok: true, fileUrl: app.fileUrl }
-  })
-
-export const listMyFavoriteIds = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    if (isDemoMode()) return [] as string[]
-    const session = await auth.api.getSession({ headers: getRequestHeaders() })
-    if (!session) return [] as string[]
-    const rows = await db
-      .select({ appId: wishlist.appId })
-      .from(wishlist)
-      .where(eq(wishlist.userId, session.user.id))
-    return rows.map((row) => row.appId)
-  },
-)
-
-export const adminUserCount = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    await requireAdmin()
-    const rows = await db.select({ id: user.id }).from(user)
-    return rows.length
-  },
-)
-
-export const getAppsByIds = createServerFn({ method: 'GET' })
-  .validator((input: { ids: string[] }) => input)
-  .handler(async ({ data }) => {
-    if (!data.ids.length) return [] as CatalogApp[]
-    if (isDemoMode()) return demoApps.filter((app) => data.ids.includes(app.id))
-    const rows = await db
-      .select(catalogSelection)
-      .from(apps)
-      .leftJoin(categories, eq(apps.categoryId, categories.id))
-      .where(and(inArray(apps.id, data.ids), eq(apps.status, 'published')))
-    return rows.map(toCatalogApp)
   })
 
 export { hasAdminRole }

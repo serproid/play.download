@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router'
 import { cn } from '@/lib/utils'
 
 const sizes = {
@@ -16,19 +15,23 @@ export function AppIcon({
   size = 'md',
   className,
   rounded,
+  priority,
 }: {
   name: string
   iconUrl?: string | null
   size?: keyof typeof sizes
   className?: string
   rounded?: boolean
+  priority?: boolean
 }) {
   if (iconUrl) {
     return (
       <img
         src={iconUrl}
         alt={`Ícone de ${name}`}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchPriority={priority ? 'high' : 'auto'}
+        decoding="async"
         className={cn(
           'shrink-0 object-cover',
           sizes[size],
@@ -51,30 +54,5 @@ export function AppIcon({
     >
       {name.trim().charAt(0).toUpperCase() || '?'}
     </div>
-  )
-}
-
-export function AppIconLink({
-  slug,
-  name,
-  iconUrl,
-  size = 'md',
-  className,
-}: {
-  slug: string
-  name: string
-  iconUrl?: string | null
-  size?: keyof typeof sizes
-  className?: string
-}) {
-  return (
-    <Link
-      to="/app/$slug"
-      params={{ slug }}
-      className={cn('shrink-0', className)}
-      aria-label={`Abrir ${name}`}
-    >
-      <AppIcon name={name} iconUrl={iconUrl} size={size} />
-    </Link>
   )
 }

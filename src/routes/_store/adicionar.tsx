@@ -21,11 +21,12 @@ function AdicionarPage() {
   return (
     <div className="py-2">
       <header className="border-b border-border pb-4">
-        <h1 className="text-[22px] font-normal text-foreground">
-          Adicionar app
+        <h1 className="text-[26px] font-medium tracking-tight text-foreground">
+          Criar página do app
         </h1>
-        <p className="mt-1 text-sm leading-5 text-[#5f6368] dark:text-[#9aa0a6]">
-          Preencha as informações e envie seu app para análise.
+        <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+          Personalize sua página. Ao salvar, você recebe um link exclusivo para
+          divulgar.
         </p>
       </header>
 

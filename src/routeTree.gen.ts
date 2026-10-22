@@ -13,17 +13,12 @@ import { Route as AdminLayoutRouteImport } from './routes/_adminLayout'
 import { Route as StoreRouteImport } from './routes/_store'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as StoreIndexRouteImport } from './routes/_store/index'
+import { Route as StoreSlugRouteImport } from './routes/_store/$slug'
 import { Route as StoreAdicionarRouteImport } from './routes/_store/adicionar'
-import { Route as StoreAppsRouteImport } from './routes/_store/apps'
-import { Route as StoreBuscarRouteImport } from './routes/_store/buscar'
-import { Route as StoreFilmesRouteImport } from './routes/_store/filmes'
-import { Route as StoreJogosRouteImport } from './routes/_store/jogos'
-import { Route as StoreLivrosRouteImport } from './routes/_store/livros'
 import { Route as StoreUsersRouteImport } from './routes/_store/users'
 import { Route as ApiUploadRouteImport } from './routes/api/upload'
 import { Route as AdminLayoutAdminPainelRouteImport } from './routes/_adminLayout/admin/painel'
 import { Route as AdminLayoutAdminUsuariosRouteImport } from './routes/_adminLayout/admin/usuarios'
-import { Route as StoreAppSlugRouteImport } from './routes/_store/app.$slug'
 import { Route as StoreMeusAppsIdRouteImport } from './routes/_store/meus-apps.$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiDownloadIdRouteImport } from './routes/api/download.$id'
@@ -49,34 +44,14 @@ const StoreIndexRoute = StoreIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StoreRoute,
 } as any)
+const StoreSlugRoute = StoreSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => StoreRoute,
+} as any)
 const StoreAdicionarRoute = StoreAdicionarRouteImport.update({
   id: '/adicionar',
   path: '/adicionar',
-  getParentRoute: () => StoreRoute,
-} as any)
-const StoreAppsRoute = StoreAppsRouteImport.update({
-  id: '/apps',
-  path: '/apps',
-  getParentRoute: () => StoreRoute,
-} as any)
-const StoreBuscarRoute = StoreBuscarRouteImport.update({
-  id: '/buscar',
-  path: '/buscar',
-  getParentRoute: () => StoreRoute,
-} as any)
-const StoreFilmesRoute = StoreFilmesRouteImport.update({
-  id: '/filmes',
-  path: '/filmes',
-  getParentRoute: () => StoreRoute,
-} as any)
-const StoreJogosRoute = StoreJogosRouteImport.update({
-  id: '/jogos',
-  path: '/jogos',
-  getParentRoute: () => StoreRoute,
-} as any)
-const StoreLivrosRoute = StoreLivrosRouteImport.update({
-  id: '/livros',
-  path: '/livros',
   getParentRoute: () => StoreRoute,
 } as any)
 const StoreUsersRoute = StoreUsersRouteImport.update({
@@ -100,11 +75,6 @@ const AdminLayoutAdminUsuariosRoute =
     path: '/admin/usuarios',
     getParentRoute: () => AdminLayoutRoute,
   } as any)
-const StoreAppSlugRoute = StoreAppSlugRouteImport.update({
-  id: '/app/$slug',
-  path: '/app/$slug',
-  getParentRoute: () => StoreRoute,
-} as any)
 const StoreMeusAppsIdRoute = StoreMeusAppsIdRouteImport.update({
   id: '/meus-apps/$id',
   path: '/meus-apps/$id',
@@ -141,17 +111,12 @@ const AdminLayoutAdminAppsNovoRoute =
 export interface FileRoutesByFullPath {
   '/': typeof StoreIndexRoute
   '/admin': typeof AdminRoute
+  '/$slug': typeof StoreSlugRoute
   '/adicionar': typeof StoreAdicionarRoute
-  '/apps': typeof StoreAppsRoute
-  '/buscar': typeof StoreBuscarRoute
-  '/filmes': typeof StoreFilmesRoute
-  '/jogos': typeof StoreJogosRoute
-  '/livros': typeof StoreLivrosRoute
   '/users': typeof StoreUsersRoute
   '/api/upload': typeof ApiUploadRoute
   '/admin/painel': typeof AdminLayoutAdminPainelRoute
   '/admin/usuarios': typeof AdminLayoutAdminUsuariosRoute
-  '/app/$slug': typeof StoreAppSlugRoute
   '/meus-apps/$id': typeof StoreMeusAppsIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/download/$id': typeof ApiDownloadIdRoute
@@ -162,17 +127,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof StoreIndexRoute
   '/admin': typeof AdminRoute
+  '/$slug': typeof StoreSlugRoute
   '/adicionar': typeof StoreAdicionarRoute
-  '/apps': typeof StoreAppsRoute
-  '/buscar': typeof StoreBuscarRoute
-  '/filmes': typeof StoreFilmesRoute
-  '/jogos': typeof StoreJogosRoute
-  '/livros': typeof StoreLivrosRoute
   '/users': typeof StoreUsersRoute
   '/api/upload': typeof ApiUploadRoute
   '/admin/painel': typeof AdminLayoutAdminPainelRoute
   '/admin/usuarios': typeof AdminLayoutAdminUsuariosRoute
-  '/app/$slug': typeof StoreAppSlugRoute
   '/meus-apps/$id': typeof StoreMeusAppsIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/download/$id': typeof ApiDownloadIdRoute
@@ -185,18 +145,13 @@ export interface FileRoutesById {
   '/_adminLayout': typeof AdminLayoutRouteWithChildren
   '/_store': typeof StoreRouteWithChildren
   '/admin': typeof AdminRoute
+  '/_store/$slug': typeof StoreSlugRoute
   '/_store/adicionar': typeof StoreAdicionarRoute
-  '/_store/apps': typeof StoreAppsRoute
-  '/_store/buscar': typeof StoreBuscarRoute
-  '/_store/filmes': typeof StoreFilmesRoute
-  '/_store/jogos': typeof StoreJogosRoute
-  '/_store/livros': typeof StoreLivrosRoute
   '/_store/users': typeof StoreUsersRoute
   '/api/upload': typeof ApiUploadRoute
   '/_store/': typeof StoreIndexRoute
   '/_adminLayout/admin/painel': typeof AdminLayoutAdminPainelRoute
   '/_adminLayout/admin/usuarios': typeof AdminLayoutAdminUsuariosRoute
-  '/_store/app/$slug': typeof StoreAppSlugRoute
   '/_store/meus-apps/$id': typeof StoreMeusAppsIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/download/$id': typeof ApiDownloadIdRoute
@@ -209,17 +164,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/$slug'
     | '/adicionar'
-    | '/apps'
-    | '/buscar'
-    | '/filmes'
-    | '/jogos'
-    | '/livros'
     | '/users'
     | '/api/upload'
     | '/admin/painel'
     | '/admin/usuarios'
-    | '/app/$slug'
     | '/meus-apps/$id'
     | '/api/auth/$'
     | '/api/download/$id'
@@ -230,17 +180,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/$slug'
     | '/adicionar'
-    | '/apps'
-    | '/buscar'
-    | '/filmes'
-    | '/jogos'
-    | '/livros'
     | '/users'
     | '/api/upload'
     | '/admin/painel'
     | '/admin/usuarios'
-    | '/app/$slug'
     | '/meus-apps/$id'
     | '/api/auth/$'
     | '/api/download/$id'
@@ -252,18 +197,13 @@ export interface FileRouteTypes {
     | '/_adminLayout'
     | '/_store'
     | '/admin'
+    | '/_store/$slug'
     | '/_store/adicionar'
-    | '/_store/apps'
-    | '/_store/buscar'
-    | '/_store/filmes'
-    | '/_store/jogos'
-    | '/_store/livros'
     | '/_store/users'
     | '/api/upload'
     | '/_store/'
     | '/_adminLayout/admin/painel'
     | '/_adminLayout/admin/usuarios'
-    | '/_store/app/$slug'
     | '/_store/meus-apps/$id'
     | '/api/auth/$'
     | '/api/download/$id'
@@ -311,46 +251,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoreIndexRouteImport
       parentRoute: typeof StoreRoute
     }
+    '/_store/$slug': {
+      id: '/_store/$slug'
+      path: '/$slug'
+      fullPath: '/$slug'
+      preLoaderRoute: typeof StoreSlugRouteImport
+      parentRoute: typeof StoreRoute
+    }
     '/_store/adicionar': {
       id: '/_store/adicionar'
       path: '/adicionar'
       fullPath: '/adicionar'
       preLoaderRoute: typeof StoreAdicionarRouteImport
-      parentRoute: typeof StoreRoute
-    }
-    '/_store/apps': {
-      id: '/_store/apps'
-      path: '/apps'
-      fullPath: '/apps'
-      preLoaderRoute: typeof StoreAppsRouteImport
-      parentRoute: typeof StoreRoute
-    }
-    '/_store/buscar': {
-      id: '/_store/buscar'
-      path: '/buscar'
-      fullPath: '/buscar'
-      preLoaderRoute: typeof StoreBuscarRouteImport
-      parentRoute: typeof StoreRoute
-    }
-    '/_store/filmes': {
-      id: '/_store/filmes'
-      path: '/filmes'
-      fullPath: '/filmes'
-      preLoaderRoute: typeof StoreFilmesRouteImport
-      parentRoute: typeof StoreRoute
-    }
-    '/_store/jogos': {
-      id: '/_store/jogos'
-      path: '/jogos'
-      fullPath: '/jogos'
-      preLoaderRoute: typeof StoreJogosRouteImport
-      parentRoute: typeof StoreRoute
-    }
-    '/_store/livros': {
-      id: '/_store/livros'
-      path: '/livros'
-      fullPath: '/livros'
-      preLoaderRoute: typeof StoreLivrosRouteImport
       parentRoute: typeof StoreRoute
     }
     '/_store/users': {
@@ -380,13 +292,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/usuarios'
       preLoaderRoute: typeof AdminLayoutAdminUsuariosRouteImport
       parentRoute: typeof AdminLayoutRoute
-    }
-    '/_store/app/$slug': {
-      id: '/_store/app/$slug'
-      path: '/app/$slug'
-      fullPath: '/app/$slug'
-      preLoaderRoute: typeof StoreAppSlugRouteImport
-      parentRoute: typeof StoreRoute
     }
     '/_store/meus-apps/$id': {
       id: '/_store/meus-apps/$id'
@@ -454,28 +359,18 @@ const AdminLayoutRouteWithChildren = AdminLayoutRoute._addFileChildren(
 )
 
 interface StoreRouteChildren {
+  StoreSlugRoute: typeof StoreSlugRoute
   StoreAdicionarRoute: typeof StoreAdicionarRoute
-  StoreAppsRoute: typeof StoreAppsRoute
-  StoreBuscarRoute: typeof StoreBuscarRoute
-  StoreFilmesRoute: typeof StoreFilmesRoute
-  StoreJogosRoute: typeof StoreJogosRoute
-  StoreLivrosRoute: typeof StoreLivrosRoute
   StoreUsersRoute: typeof StoreUsersRoute
   StoreIndexRoute: typeof StoreIndexRoute
-  StoreAppSlugRoute: typeof StoreAppSlugRoute
   StoreMeusAppsIdRoute: typeof StoreMeusAppsIdRoute
 }
 
 const StoreRouteChildren: StoreRouteChildren = {
+  StoreSlugRoute: StoreSlugRoute,
   StoreAdicionarRoute: StoreAdicionarRoute,
-  StoreAppsRoute: StoreAppsRoute,
-  StoreBuscarRoute: StoreBuscarRoute,
-  StoreFilmesRoute: StoreFilmesRoute,
-  StoreJogosRoute: StoreJogosRoute,
-  StoreLivrosRoute: StoreLivrosRoute,
   StoreUsersRoute: StoreUsersRoute,
   StoreIndexRoute: StoreIndexRoute,
-  StoreAppSlugRoute: StoreAppSlugRoute,
   StoreMeusAppsIdRoute: StoreMeusAppsIdRoute,
 }
 

@@ -1,6 +1,6 @@
 # Play Download
 
-Plataforma mobile-first para baixar apps, jogos, filmes e livros, com catálogo público, avaliações, lista de desejos, envio de apps pela comunidade e painel administrativo completo.
+Plataforma para cada usuário criar e divulgar a página do seu app. Cada app tem uma URL própria (`dominio.com/nome-do-app`), isolada das demais, com painel administrativo para moderação.
 
 ## Stack
 
@@ -13,20 +13,15 @@ Plataforma mobile-first para baixar apps, jogos, filmes e livros, com catálogo 
 
 ## Funcionalidades
 
-- Bottom navigation fixa: **Início, Jogos, Apps, Filmes, Livros**
-- Home com destaques, mais baixados, categorias e novidades
-- Catálogo com busca, filtros por categoria e páginas por tipo
-- Página de detalhe no estilo Play Store: instalar, compartilhar, lista de desejos, distribuição de notas, avaliações, informações técnicas e sobre
-- Avaliações com estrelas (1–5) e comentário, com média recalculada automaticamente
-- Contas de usuário com cadastro/login
-- Envio de apps pela comunidade (fica em análise até aprovação)
-- Painel admin:
-  - visão geral com métricas
-  - fila de aprovação
-  - CRUD de apps, destaque e status
-  - criação de usuários, promoção a admin, bloqueio/desbloqueio e exclusão
+- Página individual do app em `/{slug}` (ex.: `play.download/meu-app`)
+- Link exclusivo com botão de copiar para o usuário divulgar
+- Link e metadados de compartilhamento (Open Graph) por página
+- Conta do usuário com upload, edição e status das páginas
+- Aprovação de páginas pelo painel administrativo
+- Pré-visualização da própria página mesmo antes da aprovação
 - Upload autenticado de arquivos para o Supabase Storage
 - Registro de downloads por usuário/app
+- Tipografia nativa do sistema, sem requisições externas de fontes
 - **Modo demonstração**: sem `DATABASE_URL`, o catálogo usa dados fictícios e o login/admin ficam indisponíveis
 
 ## Rodando localmente
@@ -59,9 +54,7 @@ npm run db:seed
 npm run dev
 ```
 
-Acesse `http://localhost:3000` e o painel em `http://localhost:3000/admin` com o e-mail/senha definidos em `ADMIN_EMAIL`/`ADMIN_PASSWORD`.
-
-> O seed cria categorias, apps de demonstração, usuários fictícios, avaliações e o administrador.
+Acesse `http://localhost:3000/users` para entrar e criar a primeira página. O painel administrativo fica em `http://localhost:3000/admin`.
 
 ## Supabase
 
@@ -93,27 +86,26 @@ Sem um banco configurado, a interface funciona em modo demonstração, mas auten
 
 ## Rotas principais
 
-| Rota                                 | Descrição                         |
-| ------------------------------------ | --------------------------------- |
-| `/`                                  | Home                              |
-| `/jogos` `/apps` `/filmes` `/livros` | Catálogo por tipo                 |
-| `/buscar`                            | Busca global                      |
-| `/app/$slug`                         | Detalhe do app                    |
-| `/adicionar`                         | Envio de app (logado)             |
-| `/minha-conta`                       | Perfil, lista de desejos e envios |
-| `/login` `/cadastro`                 | Autenticação                      |
-| `/admin`                             | Dashboard                         |
-| `/admin/apps`                        | Gerenciar catálogo                |
-| `/admin/usuarios`                    | Gerenciar usuários                |
-| `/api/auth/*`                        | Better Auth                       |
-| `/api/upload`                        | Upload autenticado                |
-| `/api/download/$id`                  | Download + contagem               |
+| Rota                | Descrição                               |
+| ------------------- | --------------------------------------- |
+| `/`                 | Redireciona para a página do usuário    |
+| `/{slug}`           | Página individual e isolada do app      |
+| `/adicionar`        | Criar uma página de app (logado)        |
+| `/users`            | Entrar, criar conta e gerenciar páginas |
+| `/meus-apps/$id`    | Editar a própria página                 |
+| `/admin`            | Dashboard                               |
+| `/admin/apps`       | Gerenciar apps                          |
+| `/admin/usuarios`   | Gerenciar usuários                      |
+| `/api/auth/*`       | Better Auth                             |
+| `/api/upload`       | Upload autenticado                      |
+| `/api/download/$id` | Download + contagem                     |
 
 ## Segurança
 
 - Rotas `/admin` protegidas por sessão + papel `admin` no `beforeLoad`.
 - Server functions administrativas validam o papel no servidor.
 - Upload exige sessão, valida tipo/tamanho e usa a service role apenas no servidor.
+- Slugs reservados (`admin`, `api`, `users`, entre outros) não podem ser usados por apps.
 - Nunca exponha `SUPABASE_SERVICE_ROLE_KEY` ou `BETTER_AUTH_SECRET` no cliente.
 - O `.env` está no `.gitignore`.
 
