@@ -19,7 +19,7 @@ export const Route = createRootRoute({
           'width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5',
       },
       {
-        title: 'Play Store — a página do seu app',
+        title: 'Google Play — a página do seu app',
       },
       {
         name: 'description',
@@ -37,7 +37,10 @@ export const Route = createRootRoute({
       { property: 'og:site_name', content: SITE_NAME },
       { property: 'og:locale', content: 'pt_BR' },
       { property: 'og:image', content: DEFAULT_OG_IMAGE },
-      { property: 'og:image:alt', content: 'Play Store — a página do seu app' },
+      {
+        property: 'og:image:alt',
+        content: 'Google Play — a página do seu app',
+      },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: SITE_NAME },
       {

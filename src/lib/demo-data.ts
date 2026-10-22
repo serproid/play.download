@@ -265,25 +265,25 @@ export function getDemoAppBySlug(slug: string): AppDetail | null {
   if (!app) return null
 
   const reviews = demoReviews[slug] ?? []
+  const reviewCount = 100000
   const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-  if (reviews.length > 0) {
-    const reviewCount = app.reviewCount || reviews.length
-    distribution[5] = Math.round(reviewCount * 0.82)
-    distribution[4] = Math.round(reviewCount * 0.12)
-    distribution[3] = Math.round(reviewCount * 0.04)
-    distribution[2] = Math.round(reviewCount * 0.015)
-    distribution[1] = Math.max(
-      0,
-      reviewCount -
-        distribution[5] -
-        distribution[4] -
-        distribution[3] -
-        distribution[2],
-    )
-  }
+  distribution[5] = Math.round(reviewCount * 0.82)
+  distribution[4] = Math.round(reviewCount * 0.12)
+  distribution[3] = Math.round(reviewCount * 0.04)
+  distribution[2] = Math.round(reviewCount * 0.015)
+  distribution[1] = Math.max(
+    0,
+    reviewCount -
+      distribution[5] -
+      distribution[4] -
+      distribution[3] -
+      distribution[2],
+  )
 
   return {
     ...app,
+    rating: 4.6,
+    reviewCount: 100000,
     status:
       getDemoAdminApps().find((item) => item.id === app.id)?.status ??
       app.status,
@@ -305,6 +305,8 @@ export function getDemoAppBySlug(slug: string): AppDetail | null {
 export function getDemoAdminApps(): AdminApp[] {
   return demoApps.map((app) => ({
     ...app,
+    rating: 4.6,
+    reviewCount: 100000,
     status: 'published',
     description: demoDescriptions[app.slug] ?? app.tagline,
     version: '4.3',
@@ -330,7 +332,7 @@ export const demoUsers: UserRow[] = [
   {
     id: 'demo-admin',
     name: 'Administrador Demo',
-    email: 'admin@demo.playstore',
+    email: 'admin@demo.googleplay',
     role: 'admin',
     banned: false,
     createdAt: '2026-09-01T12:00:00.000Z',

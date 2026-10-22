@@ -108,6 +108,18 @@ function normalizeDownloads(value: number | null | undefined) {
   return Math.max(0, Math.floor(Number(value)))
 }
 
+function normalizeRating(value: number | null | undefined) {
+  const rating = Number(value)
+  if (!Number.isFinite(rating)) return 4.6
+  return Math.round(Math.min(5, Math.max(0, rating)) * 10) / 10
+}
+
+function normalizeReviewCount(value: number | null | undefined) {
+  const count = Number(value)
+  if (!Number.isFinite(count)) return 100000
+  return Math.max(0, Math.floor(count))
+}
+
 function slugify(value: string) {
   return (
     value
@@ -254,6 +266,22 @@ export const getAppDetail = createServerFn({ method: 'GET' })
       distribution[key] += 1
     }
 
+    if (reviewRows.length === 0 && row.reviewCount > 0) {
+      const total = row.reviewCount
+      distribution[5] = Math.round(total * 0.82)
+      distribution[4] = Math.round(total * 0.12)
+      distribution[3] = Math.round(total * 0.04)
+      distribution[2] = Math.round(total * 0.015)
+      distribution[1] = Math.max(
+        0,
+        total -
+          distribution[5] -
+          distribution[4] -
+          distribution[3] -
+          distribution[2],
+      )
+    }
+
     return {
       ...toCatalogApp(row),
       description: row.description,
@@ -349,6 +377,8 @@ export const submitApp = createServerFn({ method: 'POST' })
       fileName: normalizeText(data.fileName),
       fileSize: data.fileSize,
       downloads: normalizeDownloads(data.downloads),
+      rating: 4.6,
+      reviewCount: 100000,
       status: 'published',
       submittedBy: session.user.id,
     })
@@ -577,6 +607,8 @@ async function persistApp(
     fileName: normalizeText(data.fileName),
     fileSize: data.fileSize,
     downloads: normalizeDownloads(data.downloads),
+    rating: normalizeRating(data.rating),
+    reviewCount: normalizeReviewCount(data.reviewCount),
     status: data.status ?? 'published',
     featured: data.featured ?? false,
   }

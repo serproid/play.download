@@ -75,6 +75,8 @@ export type AppInput = {
   fileName: string
   fileSize: number | null
   downloads: number
+  rating: number
+  reviewCount: number
 }
 
 export type AdminApp = CatalogApp & {

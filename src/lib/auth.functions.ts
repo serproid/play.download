@@ -21,7 +21,7 @@ export const demoSession = {
   user: {
     id: 'demo-admin',
     name: 'Administrador Demo',
-    email: 'admin@demo.playstore',
+    email: 'admin@demo.googleplay',
     emailVerified: true,
     image: null,
     role: 'admin',

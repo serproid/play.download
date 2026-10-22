@@ -58,6 +58,8 @@ function emptyForm(developer = ''): AppInput {
     fileName: '',
     fileSize: null,
     downloads: 0,
+    rating: 4.6,
+    reviewCount: 100000,
   }
 }
 
@@ -93,6 +95,8 @@ export function AppForm({
           fileName: initial.fileName ?? '',
           fileSize: initial.fileSize,
           downloads: initial.downloads,
+          rating: initial.rating,
+          reviewCount: initial.reviewCount,
         }
       : emptyForm(defaultDeveloper),
   )
@@ -482,6 +486,37 @@ export function AppForm({
                   ))}
                 </SelectContent>
               </Select>
+            </Field>
+            <Field label="Nota (0 a 5)">
+              <Input
+                type="number"
+                min={0}
+                max={5}
+                step={0.1}
+                inputMode="decimal"
+                value={form.rating}
+                onChange={(event) =>
+                  update(
+                    'rating',
+                    Math.min(5, Math.max(0, Number(event.target.value) || 0)),
+                  )
+                }
+              />
+            </Field>
+            <Field label="Avaliações">
+              <Input
+                type="number"
+                min={0}
+                step={1}
+                inputMode="numeric"
+                value={form.reviewCount}
+                onChange={(event) =>
+                  update(
+                    'reviewCount',
+                    Math.max(0, Math.floor(Number(event.target.value) || 0)),
+                  )
+                }
+              />
             </Field>
             <label className="flex items-center justify-between gap-3 self-end rounded-xl border border-border px-3 py-2.5">
               <span>

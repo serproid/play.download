@@ -4,6 +4,7 @@ import { AppIcon } from '@/components/store/app-icon'
 import { DeviceNote, InstallButton } from '@/components/store/app-actions'
 import { Stars } from '@/components/store/stars'
 import { getAppDetail } from '@/lib/apps.functions'
+import { getDefaultReviews } from '@/lib/default-reviews'
 import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL, ogImageFor } from '@/lib/seo'
 import type { AppDetail } from '@/lib/types'
 import { cn, formatCount } from '@/lib/utils'
@@ -117,10 +118,8 @@ function ratingLabel(value: number) {
 
 function AppDetailPage() {
   const app: AppDetail = Route.useLoaderData()
-  const { user } = Route.useRouteContext()
-  const isOwner = Boolean(user && app.submittedBy === user.id)
-  const isPending = app.status !== 'published'
-  const totalReviews = app.reviewCount || app.reviews.length
+  const reviews = app.reviews.length > 0 ? app.reviews : getDefaultReviews()
+  const totalReviews = app.reviewCount || reviews.length
   const counts = [1, 2, 3, 4, 5].map(
     (star) => app.distribution[star as 1 | 2 | 3 | 4 | 5] ?? 0,
   )
@@ -160,14 +159,6 @@ function AppDetailPage() {
           </p>
         </div>
       </header>
-
-      {isOwner ? (
-        <p className="mt-4 text-xs text-muted-foreground">
-          {isPending
-            ? 'Sua página está em análise.'
-            : 'Sua página está publicada.'}
-        </p>
-      ) : null}
 
       <div className="mt-5 grid grid-cols-3 divide-x divide-border border-y border-border">
         <div className="flex flex-col items-center justify-center px-2 py-4 text-center">
@@ -242,9 +233,9 @@ function AppDetailPage() {
           </div>
         </div>
 
-        {app.reviews.length > 0 ? (
+        {reviews.length > 0 ? (
           <div className="mt-4 divide-y divide-border border-t border-border">
-            {app.reviews.map((review) => (
+            {reviews.map((review) => (
               <div key={review.id} className="py-5">
                 <div className="flex items-center gap-3">
                   <span
@@ -289,11 +280,7 @@ function AppDetailPage() {
               </div>
             ))}
           </div>
-        ) : (
-          <p className="mt-6 text-sm text-muted-foreground">
-            Ainda não há avaliações.
-          </p>
-        )}
+        ) : null}
       </section>
 
       <section className="mt-6 border-t border-border pt-6">
