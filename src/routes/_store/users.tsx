@@ -64,6 +64,8 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
   const router = useRouter()
   const [pending, setPending] = useState(false)
   const isAdmin = hasAdminRoleClient(user.role)
+  const limit = isAdmin ? 10 : 5
+  const atLimit = data.submissions.length >= limit
 
   async function signOut() {
     setPending(true)
@@ -105,13 +107,19 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
         </div>
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
-          <Link
-            to="/adicionar"
-            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-brand px-4 text-[13px] font-medium text-brand-foreground"
-          >
-            <PlusCircle className="size-4" />
-            Criar página de app
-          </Link>
+          {atLimit ? (
+            <span className="inline-flex h-10 items-center rounded-full border border-dashed border-border px-4 text-[13px] font-medium text-muted-foreground">
+              Limite de {limit} apps atingido
+            </span>
+          ) : (
+            <Link
+              to="/adicionar"
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-brand px-4 text-[13px] font-medium text-brand-foreground"
+            >
+              <PlusCircle className="size-4" />
+              Criar página de app
+            </Link>
+          )}
           {isAdmin ? (
             <Link
               to="/admin/painel"
@@ -137,8 +145,7 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
             Minhas páginas
           </h2>
           <span className="text-xs text-muted-foreground">
-            {data.submissions.length}{' '}
-            {data.submissions.length === 1 ? 'app' : 'apps'}
+            {data.submissions.length} de {limit} apps
           </span>
         </div>
 

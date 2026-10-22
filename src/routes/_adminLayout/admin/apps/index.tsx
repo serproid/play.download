@@ -3,6 +3,7 @@ import { AppWindow, Plus, Search, Star } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { AdminAppActions } from '@/components/admin/app-actions'
 import { AppIcon } from '@/components/store/app-icon'
+import { CopyLinkButton } from '@/components/store/share-link'
 import { adminListApps } from '@/lib/apps.functions'
 import type { AdminApp } from '@/lib/types'
 import { cn, formatCount } from '@/lib/utils'
@@ -185,7 +186,7 @@ function AdminAppsPage() {
                 <span className="hidden text-[11px] text-muted-foreground sm:block">
                   {formatCount(app.downloads)}
                 </span>
-                <div className="flex items-center gap-1.5 sm:justify-end">
+                <div className="flex items-center gap-1 sm:justify-end">
                   <span
                     className={cn(
                       'rounded-full px-2 py-0.5 text-[9px] font-bold sm:hidden',
@@ -194,6 +195,7 @@ function AdminAppsPage() {
                   >
                     {statusLabels[app.status]}
                   </span>
+                  <CopyLinkButton slug={app.slug} compact />
                   <AdminAppActions app={app} />
                 </div>
               </div>

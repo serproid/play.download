@@ -18,8 +18,9 @@ Plataforma para cada usuário criar e divulgar a página do seu app. Cada app te
 - Link e metadados de compartilhamento (Open Graph) por página
 - Contas criadas pelo administrador (cadastro público desabilitado)
 - Conta do usuário com upload, edição e status das páginas
-- Aprovação de páginas pelo painel administrativo
-- Pré-visualização da própria página mesmo antes da aprovação
+- Publicação imediata da página após o envio
+- Limite de apps: 10 para administradores e 5 para usuários
+- Painel administrativo para editar, destacar ou remover páginas
 - Upload autenticado de arquivos para o Supabase Storage
 - Registro de downloads por usuário/app
 - Tipografia nativa do sistema, sem requisições externas de fontes

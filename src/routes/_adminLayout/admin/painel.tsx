@@ -1,15 +1,11 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import {
   ArrowUpRight,
-  Clock3,
-  Download,
-  Inbox,
-  Star,
-  Users,
   AppWindow,
   CheckCircle2,
+  Download,
+  Users,
 } from 'lucide-react'
-import { AdminAppActions, ApproveRejectActions } from '@/components/admin/app-actions'
 import { AppIcon } from '@/components/store/app-icon'
 import { adminListApps, adminStats } from '@/lib/apps.functions'
 import type { AdminApp } from '@/lib/types'
@@ -23,10 +19,7 @@ export const Route = createFileRoute('/_adminLayout/admin/painel')({
   component: AdminDashboard,
 })
 
-const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
-  day: '2-digit',
-  month: 'short',
-})
+const numberFormatter = new Intl.NumberFormat('pt-BR')
 
 const statusStyles: Record<AdminApp['status'], string> = {
   pending: 'bg-[#fdf5e5] text-[#99690d]',
@@ -42,33 +35,39 @@ const statusLabels: Record<AdminApp['status'], string> = {
 
 function AdminDashboard() {
   const { stats, apps } = Route.useLoaderData()
-  const pending = apps.filter((app) => app.status === 'pending')
-  const recent = apps.slice(0, 6)
+  const { user } = Route.useRouteContext()
+
+  const myApps = apps
+    .filter((app) => app.submittedBy === user.id)
+    .sort((a, b) => b.downloads - a.downloads)
+  const totalDownloads = myApps.reduce((total, app) => total + app.downloads, 0)
+  const published = myApps.filter((app) => app.status === 'published').length
+  const maxDownloads = Math.max(...myApps.map((app) => app.downloads), 1)
 
   const cards = [
     {
-      label: 'Apps publicados',
-      value: formatCount(stats.published),
-      icon: AppWindow,
-      tone: 'bg-brand-soft text-brand',
-    },
-    {
-      label: 'Aguardando análise',
-      value: formatCount(stats.pending),
-      icon: Clock3,
-      tone: 'bg-[#fdf5e5] text-[#99690d]',
-    },
-    {
-      label: 'Downloads totais',
-      value: formatCount(stats.downloads),
+      label: 'Downloads nos meus apps',
+      value: numberFormatter.format(totalDownloads),
       icon: Download,
-      tone: 'bg-[#eef1fb] text-[#4a63c8]',
+      highlight: true,
+    },
+    {
+      label: 'Meus apps',
+      value: formatCount(myApps.length),
+      icon: AppWindow,
+      highlight: false,
+    },
+    {
+      label: 'Publicados',
+      value: formatCount(published),
+      icon: CheckCircle2,
+      highlight: false,
     },
     {
       label: 'Usuários',
       value: formatCount(stats.users),
       icon: Users,
-      tone: 'bg-[#f4edfb] text-[#7c3aad]',
+      highlight: false,
     },
   ]
 
@@ -78,7 +77,7 @@ function AdminDashboard() {
         <div>
           <h1 className="text-xl font-extrabold tracking-tight">Visão geral</h1>
           <p className="text-[11px] text-muted-foreground">
-            Gerencie o catálogo e as pessoas da plataforma.
+            Acompanhe os downloads dos seus apps.
           </p>
         </div>
       </div>
@@ -87,14 +86,28 @@ function AdminDashboard() {
         {cards.map((card) => (
           <div
             key={card.label}
-            className="rounded-2xl border border-border/80 bg-card p-3.5"
+            className={
+              card.highlight
+                ? 'rounded-2xl border border-brand/25 bg-brand-soft p-3.5'
+                : 'rounded-2xl border border-border/80 bg-card p-3.5'
+            }
           >
             <span
-              className={`flex size-8 items-center justify-center rounded-xl ${card.tone}`}
+              className={
+                card.highlight
+                  ? 'flex size-8 items-center justify-center rounded-xl bg-brand text-brand-foreground'
+                  : 'flex size-8 items-center justify-center rounded-xl bg-muted text-muted-foreground'
+              }
             >
               <card.icon className="size-4" />
             </span>
-            <p className="mt-3 text-2xl font-extrabold tracking-tight text-foreground">
+            <p
+              className={
+                card.highlight
+                  ? 'mt-3 text-2xl font-extrabold tracking-tight text-brand tabular-nums'
+                  : 'mt-3 text-2xl font-extrabold tracking-tight text-foreground tabular-nums'
+              }
+            >
               {card.value}
             </p>
             <p className="text-[11px] text-muted-foreground">{card.label}</p>
@@ -102,108 +115,86 @@ function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-        <section className="rounded-2xl border border-border/80 bg-card">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <div>
-              <h2 className="flex items-center gap-2 text-sm font-bold text-foreground">
-                <Inbox className="size-4 text-brand" />
-                Fila de aprovação
-              </h2>
-              <p className="text-[11px] text-muted-foreground">
-                Apps enviados pela comunidade
-              </p>
-            </div>
-            <span className="rounded-full bg-[#fdf5e5] px-2 py-0.5 text-[10px] font-bold text-[#99690d]">
-              {pending.length}
-            </span>
+      <section className="rounded-2xl border border-border/80 bg-card">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <div>
+            <h2 className="flex items-center gap-2 text-sm font-bold text-foreground">
+              <Download className="size-4 text-brand" />
+              Downloads por app
+            </h2>
+            <p className="text-[11px] text-muted-foreground">
+              Total de downloads em cada página sua.
+            </p>
           </div>
+          <Link
+            to="/admin/apps"
+            search={{ status: undefined }}
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand hover:underline"
+          >
+            Gerenciar <ArrowUpRight className="size-3.5" />
+          </Link>
+        </div>
 
-          {pending.length > 0 ? (
-            <div className="divide-y divide-border">
-              {pending.slice(0, 5).map((app) => (
-                <div key={app.id} className="flex items-center gap-3 px-4 py-3">
-                  <AppIcon name={app.name} iconUrl={app.iconUrl} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-semibold text-foreground">
-                      {app.name}
-                    </p>
-                    <p className="truncate text-[10px] text-muted-foreground">
-                      {app.submittedByName ?? app.developer ?? 'Comunidade'} ·{' '}
-                      {dateFormatter.format(new Date(app.createdAt))}
-                    </p>
+        {myApps.length > 0 ? (
+          <div className="divide-y divide-border">
+            {myApps.map((app) => {
+              const percent = Math.round((app.downloads / maxDownloads) * 100)
+              return (
+                <div key={app.id} className="px-4 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <AppIcon name={app.name} iconUrl={app.iconUrl} size="sm" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="truncate text-xs font-semibold text-foreground">
+                          {app.name}
+                        </p>
+                        <span
+                          className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold ${statusStyles[app.status]}`}
+                        >
+                          {statusLabels[app.status]}
+                        </span>
+                      </div>
+                      <p className="truncate text-[10px] text-muted-foreground">
+                        {app.tagline ?? app.categoryName ?? 'Página do app'}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="text-base font-semibold tabular-nums text-foreground">
+                        {numberFormatter.format(app.downloads)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        downloads
+                      </p>
+                    </div>
                   </div>
-                  <ApproveRejectActions app={app} />
+                  <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-brand"
+                      style={{ width: `${percent}%` }}
+                    />
+                  </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center px-4 py-8 text-center">
-              <CheckCircle2 className="size-7 text-brand" />
-              <p className="mt-2 text-xs font-semibold text-foreground">
-                Tudo em dia
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                Nenhum app aguardando análise.
-              </p>
-            </div>
-          )}
-
-          {pending.length > 5 ? (
-            <div className="border-t border-border px-4 py-2.5">
-              <Link
-                to="/admin/apps"
-                search={{ status: 'pending' }}
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand"
-              >
-                Ver todos os pendentes <ArrowUpRight className="size-3.5" />
-              </Link>
-            </div>
-          ) : null}
-        </section>
-
-        <section className="rounded-2xl border border-border/80 bg-card">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <div>
-              <h2 className="flex items-center gap-2 text-sm font-bold text-foreground">
-                <Star className="size-4 text-[#f5b301]" />
-                Catálogo recente
-              </h2>
-              <p className="text-[11px] text-muted-foreground">
-                Últimos apps adicionados
-              </p>
-            </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center px-4 py-10 text-center">
+            <AppWindow className="size-7 text-muted-foreground/50" />
+            <p className="mt-2 text-xs font-semibold text-foreground">
+              Você ainda não tem apps
+            </p>
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              Crie um app para começar a acompanhar os downloads.
+            </p>
             <Link
-              to="/admin/apps"
-              search={{ status: undefined }}
-              className="text-[11px] font-semibold text-brand hover:underline"
+              to="/admin/apps/novo"
+              className="mt-3 inline-flex h-9 items-center gap-1.5 rounded-full bg-brand px-4 text-xs font-bold text-brand-foreground"
             >
-              Ver todos
+              Criar app
             </Link>
           </div>
-          <div className="divide-y divide-border">
-            {recent.map((app) => (
-              <div key={app.id} className="flex items-center gap-3 px-4 py-2.5">
-                <AppIcon name={app.name} iconUrl={app.iconUrl} size="sm" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-semibold text-foreground">
-                    {app.name}
-                  </p>
-                  <p className="truncate text-[10px] text-muted-foreground">
-                    {formatCount(app.downloads)} downloads · {app.rating.toFixed(1)} ★
-                  </p>
-                </div>
-                <span
-                  className={`hidden rounded-full px-2 py-0.5 text-[9px] font-bold sm:inline ${statusStyles[app.status]}`}
-                >
-                  {statusLabels[app.status]}
-                </span>
-                <AdminAppActions app={app} />
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
+        )}
+      </section>
 
       <section className="rounded-2xl border border-brand/15 bg-gradient-to-r from-brand-soft to-card p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

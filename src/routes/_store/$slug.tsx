@@ -2,7 +2,6 @@ import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { Info, Pencil, Star, ThumbsUp } from 'lucide-react'
 import { AppIcon } from '@/components/store/app-icon'
 import { DeviceNote, InstallButton } from '@/components/store/app-actions'
-import { ShareLink } from '@/components/store/share-link'
 import { Stars } from '@/components/store/stars'
 import { getAppDetail } from '@/lib/apps.functions'
 import type { AppDetail } from '@/lib/types'
@@ -137,23 +136,20 @@ function AppDetailPage() {
       </header>
 
       {isOwner ? (
-        <div className="mt-5 space-y-2.5">
-          <ShareLink slug={app.slug} />
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs text-muted-foreground">
-              {isPending
-                ? 'Sua página está em análise. Você já pode compartilhar o link.'
-                : 'Sua página está publicada.'}
-            </p>
-            <Link
-              to="/meus-apps/$id"
-              params={{ id: app.id }}
-              className="inline-flex items-center gap-1 text-[12px] font-medium text-brand hover:underline"
-            >
-              <Pencil className="size-3.5" />
-              Editar página
-            </Link>
-          </div>
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <p className="text-xs text-muted-foreground">
+            {isPending
+              ? 'Sua página está em análise.'
+              : 'Sua página está publicada.'}
+          </p>
+          <Link
+            to="/meus-apps/$id"
+            params={{ id: app.id }}
+            className="inline-flex items-center gap-1 text-[12px] font-medium text-brand hover:underline"
+          >
+            <Pencil className="size-3.5" />
+            Editar página
+          </Link>
         </div>
       ) : null}
 

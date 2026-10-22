@@ -34,7 +34,7 @@ const typeOptions: Array<{ value: AppType; label: string }> = [
 ]
 
 const statusOptions: Array<{ value: AppStatus; label: string }> = [
-  { value: 'pending', label: 'Aguardando análise' },
+  { value: 'pending', label: 'Em análise (legado)' },
   { value: 'published', label: 'Publicado' },
   { value: 'rejected', label: 'Rejeitado' },
 ]
@@ -94,7 +94,9 @@ export function AppForm({
         }
       : emptyForm(defaultDeveloper),
   )
-  const [status, setStatus] = useState<AppStatus>(initial?.status ?? 'pending')
+  const [status, setStatus] = useState<AppStatus>(
+    initial?.status ?? 'published',
+  )
   const [featured, setFeatured] = useState(initial?.featured ?? false)
   const [pending, setPending] = useState(false)
   const [uploading, setUploading] = useState<string | null>(null)

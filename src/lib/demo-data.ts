@@ -302,12 +302,10 @@ export function getDemoAppBySlug(slug: string): AppDetail | null {
   }
 }
 
-const demoAdminStatuses = ['published', 'pending', 'rejected'] as const
-
 export function getDemoAdminApps(): AdminApp[] {
-  return demoApps.map((app, index) => ({
+  return demoApps.map((app) => ({
     ...app,
-    status: demoAdminStatuses[index] ?? 'published',
+    status: 'published',
     description: demoDescriptions[app.slug] ?? app.tagline,
     version: '4.3',
     size: 'Varia por dispositivo',

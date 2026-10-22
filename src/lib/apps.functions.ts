@@ -141,6 +141,18 @@ async function uniqueSlug(name: string, ignoreId?: string) {
   return `${base}-${Date.now().toString(36)}`
 }
 
+function appLimitForRole(role?: string | null) {
+  return hasAdminRole(role) ? 10 : 5
+}
+
+async function countAppsForUser(userId: string) {
+  const [row] = await db
+    .select({ total: sql<number>`count(*)::int` })
+    .from(apps)
+    .where(eq(apps.submittedBy, userId))
+  return Number(row?.total ?? 0)
+}
+
 export const listCategories = createServerFn({ method: 'GET' }).handler(
   async () => {
     if (isDemoMode()) return demoCategories
@@ -297,6 +309,12 @@ export const submitApp = createServerFn({ method: 'POST' })
       throw new Error('Escolha a categoria principal.')
     }
 
+    const limit = appLimitForRole(session.user.role)
+    const total = await countAppsForUser(session.user.id)
+    if (total >= limit) {
+      throw new Error(`Limite de ${limit} apps atingido.`)
+    }
+
     const slug = await uniqueSlug(data.name)
 
     await db.insert(apps).values({
@@ -317,7 +335,7 @@ export const submitApp = createServerFn({ method: 'POST' })
       fileUrl: normalizeText(data.fileUrl),
       fileName: normalizeText(data.fileName),
       fileSize: data.fileSize,
-      status: 'pending',
+      status: 'published',
       submittedBy: session.user.id,
     })
 
@@ -518,6 +536,7 @@ async function persistApp(
     status?: AppStatus
     featured?: boolean
   },
+  submittedBy?: string,
 ) {
   const values = {
     name: data.name.trim(),
@@ -536,7 +555,7 @@ async function persistApp(
     fileUrl: normalizeText(data.fileUrl),
     fileName: normalizeText(data.fileName),
     fileSize: data.fileSize,
-    status: data.status ?? 'pending',
+    status: data.status ?? 'published',
     featured: data.featured ?? false,
   }
 
@@ -548,7 +567,7 @@ async function persistApp(
   const slug = await uniqueSlug(data.name)
   const [created] = await db
     .insert(apps)
-    .values({ ...values, slug })
+    .values({ ...values, slug, submittedBy })
     .returning({ id: apps.id })
   return { id: created.id }
 }
@@ -570,9 +589,19 @@ export const adminSaveApp = createServerFn({ method: 'POST' })
       }
     }
 
-    await requireAdmin()
+    const session = await requireAdmin()
+
     if (!data.name?.trim()) throw new Error('Informe o nome do app.')
-    return persistApp(data)
+
+    if (!data.id) {
+      const limit = appLimitForRole(session.user.role)
+      const total = await countAppsForUser(session.user.id)
+      if (total >= limit) {
+        throw new Error(`Limite de ${limit} apps atingido.`)
+      }
+    }
+
+    return persistApp(data, session.user.id)
   })
 
 export const adminSetStatus = createServerFn({ method: 'POST' })

@@ -1,4 +1,4 @@
-import { Check, Copy, Link2 } from 'lucide-react'
+import { Check, Link2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -11,7 +11,7 @@ function usePageUrl(slug: string) {
     setOrigin(window.location.origin)
   }, [])
 
-  return { path, origin, url: `${origin}${path}` }
+  return { path, url: `${origin}${path}` }
 }
 
 async function copyValue(value: string) {
@@ -33,17 +33,43 @@ async function copyValue(value: string) {
 export function CopyLinkButton({
   slug,
   className,
+  compact,
 }: {
   slug: string
   className?: string
+  compact?: boolean
 }) {
-  const { url } = usePageUrl(slug)
+  const { path, url } = usePageUrl(slug)
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
-    await copyValue(url)
+    const value = url.startsWith('http')
+      ? url
+      : `${window.location.origin}${path}`
+    await copyValue(value)
     setCopied(true)
     window.setTimeout(() => setCopied(false), 2000)
+  }
+
+  if (compact) {
+    return (
+      <button
+        type="button"
+        onClick={handleCopy}
+        className={cn(
+          'inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
+          className,
+        )}
+        aria-label={copied ? 'Link copiado' : 'Copiar link da página'}
+        title={copied ? 'Link copiado' : 'Copiar link da página'}
+      >
+        {copied ? (
+          <Check className="size-4 text-brand" />
+        ) : (
+          <Link2 className="size-4" />
+        )}
+      </button>
+    )
   }
 
   return (
@@ -63,48 +89,5 @@ export function CopyLinkButton({
       )}
       {copied ? 'Copiado' : 'Copiar link'}
     </button>
-  )
-}
-
-export function ShareLink({
-  slug,
-  className,
-}: {
-  slug: string
-  className?: string
-}) {
-  const { path, origin, url } = usePageUrl(slug)
-  const [copied, setCopied] = useState(false)
-
-  async function handleCopy() {
-    await copyValue(url)
-    setCopied(true)
-    window.setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <div
-      className={cn(
-        'flex items-center gap-3 rounded-2xl border border-brand/25 bg-brand-soft/60 px-4 py-3',
-        className,
-      )}
-    >
-      <div className="min-w-0 flex-1">
-        <p className="text-[10px] font-medium tracking-[0.08em] text-brand uppercase">
-          Link da sua página
-        </p>
-        <p className="mt-0.5 truncate text-[13px] text-foreground">
-          {origin ? url : path}
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-brand px-3.5 text-[12px] font-medium text-brand-foreground"
-      >
-        {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-        {copied ? 'Copiado' : 'Copiar'}
-      </button>
-    </div>
   )
 }
