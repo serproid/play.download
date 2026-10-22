@@ -10,7 +10,7 @@ export function StoreShell({ children }: { children: React.ReactNode }) {
           <BrandLogo />
           <Link
             to="/users"
-            search={{ redirect: undefined, mode: undefined }}
+            search={{ redirect: undefined }}
             className="inline-flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
             aria-label="Minha conta"
           >

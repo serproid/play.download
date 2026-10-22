@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_store/meus-apps/$id')({
     if (!context.user) {
       throw redirect({
         to: '/users',
-        search: { redirect: undefined, mode: undefined },
+        search: { redirect: undefined },
       })
     }
   },
@@ -32,7 +32,7 @@ export const Route = createFileRoute('/_store/meus-apps/$id')({
       </p>
       <Link
         to="/users"
-        search={{ redirect: undefined, mode: undefined }}
+        search={{ redirect: undefined }}
         className="mt-3 inline-block text-sm text-brand"
       >
         Voltar para minha conta
@@ -50,7 +50,7 @@ function EditMyAppPage() {
       <header className="border-b border-border pb-4">
         <Link
           to="/users"
-          search={{ redirect: undefined, mode: undefined }}
+          search={{ redirect: undefined }}
           className="mb-2 inline-flex items-center gap-1 text-[13px] text-[#5f6368] hover:text-brand dark:text-[#9aa0a6]"
         >
           <ArrowLeft className="size-4" />

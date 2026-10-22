@@ -15,12 +15,6 @@ export const Route = createFileRoute('/_store/users')({
       typeof search.redirect === 'string' && search.redirect.startsWith('/')
         ? search.redirect
         : undefined,
-    mode:
-      search.mode === 'signup'
-        ? ('signup' as const)
-        : search.mode === 'login'
-          ? ('login' as const)
-          : undefined,
   }),
   loader: async ({ context }) => (context.user ? getMySpace() : null),
   head: () => ({
@@ -44,20 +38,20 @@ const statusClasses = {
 function UsersPage() {
   const data = Route.useLoaderData()
   const { user } = Route.useRouteContext()
-  const { redirect, mode } = Route.useSearch()
+  const { redirect } = Route.useSearch()
 
   if (!user) {
     return (
       <div className="mx-auto w-full max-w-[380px] py-10">
         <h1 className="text-[28px] font-medium tracking-tight text-foreground">
-          Crie a página do seu app
+          Entrar
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Entre ou crie uma conta para publicar seu app e compartilhar uma
-          página exclusiva com quem quiser.
+          Use a conta criada pelo administrador para acessar e gerenciar a
+          página do seu app.
         </p>
         <div className="mt-6">
-          <UserAuthPanel redirectTo={redirect} initialMode={mode} />
+          <UserAuthPanel redirectTo={redirect} />
         </div>
       </div>
     )
@@ -78,7 +72,7 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
       await router.invalidate()
       await router.navigate({
         to: '/users',
-        search: { redirect: undefined, mode: undefined },
+        search: { redirect: undefined },
       })
     } finally {
       setPending(false)

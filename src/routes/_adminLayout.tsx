@@ -11,7 +11,7 @@ export const Route = createFileRoute('/_adminLayout')({
     if (!hasAdminRole(session.user.role)) {
       throw redirect({
         to: '/users',
-        search: { redirect: undefined, mode: undefined },
+        search: { redirect: undefined },
       })
     }
     return {

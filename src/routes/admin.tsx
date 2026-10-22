@@ -11,7 +11,7 @@ export const Route = createFileRoute('/admin')({
     }
     throw redirect({
       to: '/users',
-      search: { redirect: undefined, mode: undefined },
+      search: { redirect: undefined },
     })
   },
   head: () => ({

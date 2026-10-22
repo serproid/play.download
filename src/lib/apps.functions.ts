@@ -18,7 +18,7 @@ import {
   type AppStatus,
   type AppType,
 } from './db/schema'
-import { demoCategories, getDemoAppBySlug } from './demo-data'
+import { demoApps, demoCategories, getDemoAppBySlug } from './demo-data'
 import type {
   AdminApp,
   AdminStats,
@@ -141,6 +141,24 @@ export const listCategories = createServerFn({ method: 'GET' }).handler(
       ...row,
       createdAt: row.createdAt.toISOString(),
     }))
+  },
+)
+
+export const getRootAppSlug = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<string | null> => {
+    if (isDemoMode()) return demoApps[0]?.slug ?? null
+
+    const [row] = await db
+      .select({ slug: apps.slug })
+      .from(apps)
+      .innerJoin(user, eq(apps.submittedBy, user.id))
+      .where(
+        and(eq(apps.status, 'published'), sql`${user.role} like '%admin%'`),
+      )
+      .orderBy(desc(apps.featured), desc(apps.updatedAt))
+      .limit(1)
+
+    return row?.slug ?? null
   },
 )
 

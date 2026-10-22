@@ -16,6 +16,7 @@ Plataforma para cada usuário criar e divulgar a página do seu app. Cada app te
 - Página individual do app em `/{slug}` (ex.: `play.download/meu-app`)
 - Link exclusivo com botão de copiar para o usuário divulgar
 - Link e metadados de compartilhamento (Open Graph) por página
+- Contas criadas pelo administrador (cadastro público desabilitado)
 - Conta do usuário com upload, edição e status das páginas
 - Aprovação de páginas pelo painel administrativo
 - Pré-visualização da própria página mesmo antes da aprovação
@@ -54,7 +55,7 @@ npm run db:seed
 npm run dev
 ```
 
-Acesse `http://localhost:3000/users` para entrar e criar a primeira página. O painel administrativo fica em `http://localhost:3000/admin`.
+Acesse `http://localhost:3000/admin` com a conta de administrador criada pelo seed. É o admin quem cria as contas dos usuários em **Admin → Usuários**.
 
 ## Supabase
 

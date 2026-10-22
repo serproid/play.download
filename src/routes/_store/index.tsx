@@ -1,30 +1,31 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { getMySpace } from '@/lib/apps.functions'
+import { PlayLogo } from '@/components/brand-logo'
+import { getRootAppSlug } from '@/lib/apps.functions'
 
 export const Route = createFileRoute('/_store/')({
-  beforeLoad: ({ context }) => {
-    if (!context.user) {
-      throw redirect({
-        to: '/users',
-        search: { redirect: undefined, mode: undefined },
-      })
-    }
-  },
   loader: async () => {
-    const { submissions } = await getMySpace()
-    const target =
-      submissions.find((app) => app.status === 'published') ?? submissions[0]
+    const slug = await getRootAppSlug()
 
-    if (target) {
+    if (slug) {
       throw redirect({
         to: '/$slug',
-        params: { slug: target.slug },
+        params: { slug },
       })
     }
-
-    throw redirect({
-      to: '/users',
-      search: { redirect: undefined, mode: undefined },
-    })
   },
+  component: RootEmpty,
 })
+
+function RootEmpty() {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+      <PlayLogo className="size-12" />
+      <h1 className="mt-5 text-2xl font-medium tracking-tight text-foreground">
+        Nenhum app publicado
+      </h1>
+      <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
+        O administrador ainda não publicou o app principal do domínio.
+      </p>
+    </div>
+  )
+}

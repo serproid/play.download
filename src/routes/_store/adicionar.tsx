@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_store/adicionar')({
     if (!context.user) {
       throw redirect({
         to: '/users',
-        search: { redirect: location.href, mode: undefined },
+        search: { redirect: location.href },
       })
     }
   },
