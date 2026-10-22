@@ -1,4 +1,4 @@
-import { ArrowUp, Download, Info } from 'lucide-react'
+import { ArrowUp, Download, TabletSmartphone } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import type { AppDetail } from '@/lib/types'
@@ -73,7 +73,7 @@ export function InstallButton({ app }: { app: AppDetail }) {
 export function DeviceNote() {
   return (
     <p className="flex items-center justify-center gap-1.5 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
-      <Info className="size-3.5" />
+      <TabletSmartphone className="size-4 shrink-0" />
       Este app está disponível para todos os seus dispositivos
     </p>
   )

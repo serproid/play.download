@@ -192,14 +192,14 @@ function AppDetailPage() {
 
       <div className="mt-6">
         <InstallButton app={app} />
-        <div className="mt-5 grid grid-cols-2 gap-3 px-1 text-[13px] font-medium text-muted-foreground">
-          <div className="flex items-center gap-2.5">
-            <Share2 className="size-5 shrink-0" strokeWidth={2} />
+        <div className="mt-4 flex items-center justify-around gap-3 px-1 text-[13px] font-medium text-brand">
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <Share2 className="size-[18px] shrink-0" strokeWidth={2.2} />
             <span>Compartilhar</span>
           </div>
-          <div className="flex items-center gap-2.5">
-            <BookmarkPlus className="size-5 shrink-0" strokeWidth={2} />
-            <span className="leading-4">Adicionar à lista de desejos</span>
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <BookmarkPlus className="size-[18px] shrink-0" strokeWidth={2.2} />
+            <span>Adicionar à lista de desejos</span>
           </div>
         </div>
         <div className="mt-3">
