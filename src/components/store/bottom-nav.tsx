@@ -1,5 +1,5 @@
 import { Link, useRouterState } from '@tanstack/react-router'
-import { BookOpen, Gamepad2, House, LayoutGrid, Clapperboard } from 'lucide-react'
+import { BookOpen, Clapperboard, Gamepad2, House, LayoutGrid } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const items = [
@@ -18,32 +18,29 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 backdrop-blur-xl"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background"
     >
-      <div className="safe-bottom mx-auto grid max-w-3xl grid-cols-5 px-1 pt-1.5 pb-1.5">
+      <div className="safe-bottom mx-auto grid grid-cols-5">
         {items.map((item) => {
           const active =
             item.to === '/'
               ? pathname === '/'
-              : pathname === item.to || pathname.startsWith(`${item.to}/`)
+              : pathname === item.to ||
+                pathname.startsWith(`${item.to}/`) ||
+                (item.to === '/apps' && pathname.startsWith('/app/'))
 
           return (
             <Link
               key={item.to}
               to={item.to}
-              search={{}}
+              search={{ q: undefined, category: undefined }}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 rounded-xl py-1.5 text-[11px] font-medium transition-colors',
-                active
-                  ? 'text-brand'
-                  : 'text-muted-foreground hover:text-foreground',
+                'flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium transition-colors',
+                active ? 'text-brand' : 'text-[#5f6368] dark:text-[#9aa0a6]',
               )}
               aria-current={active ? 'page' : undefined}
             >
-              <item.icon
-                className={cn('size-6 transition-transform', active && 'scale-105')}
-                strokeWidth={active ? 2.35 : 1.9}
-              />
+              <item.icon className="size-[23px]" strokeWidth={active ? 2.2 : 1.8} />
               <span className="leading-none">{item.label}</span>
             </Link>
           )

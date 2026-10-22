@@ -9,10 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AdminRouteImport } from './routes/_admin'
+import { Route as AdminLayoutRouteImport } from './routes/_adminLayout'
 import { Route as StoreRouteImport } from './routes/_store'
-import { Route as CadastroRouteImport } from './routes/cadastro'
-import { Route as LoginRouteImport } from './routes/login'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as StoreIndexRouteImport } from './routes/_store/index'
 import { Route as StoreAdicionarRouteImport } from './routes/_store/adicionar'
 import { Route as StoreAppsRouteImport } from './routes/_store/apps'
@@ -20,33 +19,29 @@ import { Route as StoreBuscarRouteImport } from './routes/_store/buscar'
 import { Route as StoreFilmesRouteImport } from './routes/_store/filmes'
 import { Route as StoreJogosRouteImport } from './routes/_store/jogos'
 import { Route as StoreLivrosRouteImport } from './routes/_store/livros'
-import { Route as StoreMinhaContaRouteImport } from './routes/_store/minha-conta'
+import { Route as StoreUsersRouteImport } from './routes/_store/users'
 import { Route as ApiUploadRouteImport } from './routes/api/upload'
-import { Route as AdminAdminIndexRouteImport } from './routes/_admin/admin/index'
-import { Route as AdminAdminUsuariosRouteImport } from './routes/_admin/admin/usuarios'
+import { Route as AdminLayoutAdminPainelRouteImport } from './routes/_adminLayout/admin/painel'
+import { Route as AdminLayoutAdminUsuariosRouteImport } from './routes/_adminLayout/admin/usuarios'
 import { Route as StoreAppSlugRouteImport } from './routes/_store/app.$slug'
+import { Route as StoreMeusAppsIdRouteImport } from './routes/_store/meus-apps.$id'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiDownloadIdRouteImport } from './routes/api/download.$id'
-import { Route as AdminAdminAppsIndexRouteImport } from './routes/_admin/admin/apps/index'
-import { Route as AdminAdminAppsIdRouteImport } from './routes/_admin/admin/apps/$id'
-import { Route as AdminAdminAppsNovoRouteImport } from './routes/_admin/admin/apps/novo'
+import { Route as AdminLayoutAdminAppsIndexRouteImport } from './routes/_adminLayout/admin/apps/index'
+import { Route as AdminLayoutAdminAppsIdRouteImport } from './routes/_adminLayout/admin/apps/$id'
+import { Route as AdminLayoutAdminAppsNovoRouteImport } from './routes/_adminLayout/admin/apps/novo'
 
-const AdminRoute = AdminRouteImport.update({
-  id: '/_admin',
+const AdminLayoutRoute = AdminLayoutRouteImport.update({
+  id: '/_adminLayout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StoreRoute = StoreRouteImport.update({
   id: '/_store',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CadastroRoute = CadastroRouteImport.update({
-  id: '/cadastro',
-  path: '/cadastro',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StoreIndexRoute = StoreIndexRouteImport.update({
@@ -84,9 +79,9 @@ const StoreLivrosRoute = StoreLivrosRouteImport.update({
   path: '/livros',
   getParentRoute: () => StoreRoute,
 } as any)
-const StoreMinhaContaRoute = StoreMinhaContaRouteImport.update({
-  id: '/minha-conta',
-  path: '/minha-conta',
+const StoreUsersRoute = StoreUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => StoreRoute,
 } as any)
 const ApiUploadRoute = ApiUploadRouteImport.update({
@@ -94,19 +89,25 @@ const ApiUploadRoute = ApiUploadRouteImport.update({
   path: '/api/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAdminIndexRoute = AdminAdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => AdminRoute,
+const AdminLayoutAdminPainelRoute = AdminLayoutAdminPainelRouteImport.update({
+  id: '/admin/painel',
+  path: '/admin/painel',
+  getParentRoute: () => AdminLayoutRoute,
 } as any)
-const AdminAdminUsuariosRoute = AdminAdminUsuariosRouteImport.update({
-  id: '/admin/usuarios',
-  path: '/admin/usuarios',
-  getParentRoute: () => AdminRoute,
-} as any)
+const AdminLayoutAdminUsuariosRoute =
+  AdminLayoutAdminUsuariosRouteImport.update({
+    id: '/admin/usuarios',
+    path: '/admin/usuarios',
+    getParentRoute: () => AdminLayoutRoute,
+  } as any)
 const StoreAppSlugRoute = StoreAppSlugRouteImport.update({
   id: '/app/$slug',
   path: '/app/$slug',
+  getParentRoute: () => StoreRoute,
+} as any)
+const StoreMeusAppsIdRoute = StoreMeusAppsIdRouteImport.update({
+  id: '/meus-apps/$id',
+  path: '/meus-apps/$id',
   getParentRoute: () => StoreRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -119,161 +120,162 @@ const ApiDownloadIdRoute = ApiDownloadIdRouteImport.update({
   path: '/api/download/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAdminAppsIndexRoute = AdminAdminAppsIndexRouteImport.update({
-  id: '/admin/apps/',
-  path: '/admin/apps/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminAdminAppsIdRoute = AdminAdminAppsIdRouteImport.update({
+const AdminLayoutAdminAppsIndexRoute =
+  AdminLayoutAdminAppsIndexRouteImport.update({
+    id: '/admin/apps/',
+    path: '/admin/apps/',
+    getParentRoute: () => AdminLayoutRoute,
+  } as any)
+const AdminLayoutAdminAppsIdRoute = AdminLayoutAdminAppsIdRouteImport.update({
   id: '/admin/apps/$id',
   path: '/admin/apps/$id',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => AdminLayoutRoute,
 } as any)
-const AdminAdminAppsNovoRoute = AdminAdminAppsNovoRouteImport.update({
-  id: '/admin/apps/novo',
-  path: '/admin/apps/novo',
-  getParentRoute: () => AdminRoute,
-} as any)
+const AdminLayoutAdminAppsNovoRoute =
+  AdminLayoutAdminAppsNovoRouteImport.update({
+    id: '/admin/apps/novo',
+    path: '/admin/apps/novo',
+    getParentRoute: () => AdminLayoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof StoreIndexRoute
-  '/cadastro': typeof CadastroRoute
-  '/login': typeof LoginRoute
+  '/admin': typeof AdminRoute
   '/adicionar': typeof StoreAdicionarRoute
   '/apps': typeof StoreAppsRoute
   '/buscar': typeof StoreBuscarRoute
   '/filmes': typeof StoreFilmesRoute
   '/jogos': typeof StoreJogosRoute
   '/livros': typeof StoreLivrosRoute
-  '/minha-conta': typeof StoreMinhaContaRoute
+  '/users': typeof StoreUsersRoute
   '/api/upload': typeof ApiUploadRoute
-  '/admin/usuarios': typeof AdminAdminUsuariosRoute
+  '/admin/painel': typeof AdminLayoutAdminPainelRoute
+  '/admin/usuarios': typeof AdminLayoutAdminUsuariosRoute
   '/app/$slug': typeof StoreAppSlugRoute
+  '/meus-apps/$id': typeof StoreMeusAppsIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/download/$id': typeof ApiDownloadIdRoute
-  '/admin/': typeof AdminAdminIndexRoute
-  '/admin/apps/$id': typeof AdminAdminAppsIdRoute
-  '/admin/apps/novo': typeof AdminAdminAppsNovoRoute
-  '/admin/apps/': typeof AdminAdminAppsIndexRoute
+  '/admin/apps/$id': typeof AdminLayoutAdminAppsIdRoute
+  '/admin/apps/novo': typeof AdminLayoutAdminAppsNovoRoute
+  '/admin/apps/': typeof AdminLayoutAdminAppsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof StoreIndexRoute
-  '/cadastro': typeof CadastroRoute
-  '/login': typeof LoginRoute
+  '/admin': typeof AdminRoute
   '/adicionar': typeof StoreAdicionarRoute
   '/apps': typeof StoreAppsRoute
   '/buscar': typeof StoreBuscarRoute
   '/filmes': typeof StoreFilmesRoute
   '/jogos': typeof StoreJogosRoute
   '/livros': typeof StoreLivrosRoute
-  '/minha-conta': typeof StoreMinhaContaRoute
+  '/users': typeof StoreUsersRoute
   '/api/upload': typeof ApiUploadRoute
-  '/admin/usuarios': typeof AdminAdminUsuariosRoute
+  '/admin/painel': typeof AdminLayoutAdminPainelRoute
+  '/admin/usuarios': typeof AdminLayoutAdminUsuariosRoute
   '/app/$slug': typeof StoreAppSlugRoute
+  '/meus-apps/$id': typeof StoreMeusAppsIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/download/$id': typeof ApiDownloadIdRoute
-  '/admin': typeof AdminAdminIndexRoute
-  '/admin/apps/$id': typeof AdminAdminAppsIdRoute
-  '/admin/apps/novo': typeof AdminAdminAppsNovoRoute
-  '/admin/apps': typeof AdminAdminAppsIndexRoute
+  '/admin/apps/$id': typeof AdminLayoutAdminAppsIdRoute
+  '/admin/apps/novo': typeof AdminLayoutAdminAppsNovoRoute
+  '/admin/apps': typeof AdminLayoutAdminAppsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_admin': typeof AdminRouteWithChildren
+  '/_adminLayout': typeof AdminLayoutRouteWithChildren
   '/_store': typeof StoreRouteWithChildren
-  '/cadastro': typeof CadastroRoute
-  '/login': typeof LoginRoute
+  '/admin': typeof AdminRoute
   '/_store/adicionar': typeof StoreAdicionarRoute
   '/_store/apps': typeof StoreAppsRoute
   '/_store/buscar': typeof StoreBuscarRoute
   '/_store/filmes': typeof StoreFilmesRoute
   '/_store/jogos': typeof StoreJogosRoute
   '/_store/livros': typeof StoreLivrosRoute
-  '/_store/minha-conta': typeof StoreMinhaContaRoute
+  '/_store/users': typeof StoreUsersRoute
   '/api/upload': typeof ApiUploadRoute
   '/_store/': typeof StoreIndexRoute
-  '/_admin/admin/usuarios': typeof AdminAdminUsuariosRoute
+  '/_adminLayout/admin/painel': typeof AdminLayoutAdminPainelRoute
+  '/_adminLayout/admin/usuarios': typeof AdminLayoutAdminUsuariosRoute
   '/_store/app/$slug': typeof StoreAppSlugRoute
+  '/_store/meus-apps/$id': typeof StoreMeusAppsIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/download/$id': typeof ApiDownloadIdRoute
-  '/_admin/admin/': typeof AdminAdminIndexRoute
-  '/_admin/admin/apps/$id': typeof AdminAdminAppsIdRoute
-  '/_admin/admin/apps/novo': typeof AdminAdminAppsNovoRoute
-  '/_admin/admin/apps/': typeof AdminAdminAppsIndexRoute
+  '/_adminLayout/admin/apps/$id': typeof AdminLayoutAdminAppsIdRoute
+  '/_adminLayout/admin/apps/novo': typeof AdminLayoutAdminAppsNovoRoute
+  '/_adminLayout/admin/apps/': typeof AdminLayoutAdminAppsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/cadastro'
-    | '/login'
+    | '/admin'
     | '/adicionar'
     | '/apps'
     | '/buscar'
     | '/filmes'
     | '/jogos'
     | '/livros'
-    | '/minha-conta'
+    | '/users'
     | '/api/upload'
+    | '/admin/painel'
     | '/admin/usuarios'
     | '/app/$slug'
+    | '/meus-apps/$id'
     | '/api/auth/$'
     | '/api/download/$id'
-    | '/admin/'
     | '/admin/apps/$id'
     | '/admin/apps/novo'
     | '/admin/apps/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/cadastro'
-    | '/login'
+    | '/admin'
     | '/adicionar'
     | '/apps'
     | '/buscar'
     | '/filmes'
     | '/jogos'
     | '/livros'
-    | '/minha-conta'
+    | '/users'
     | '/api/upload'
+    | '/admin/painel'
     | '/admin/usuarios'
     | '/app/$slug'
+    | '/meus-apps/$id'
     | '/api/auth/$'
     | '/api/download/$id'
-    | '/admin'
     | '/admin/apps/$id'
     | '/admin/apps/novo'
     | '/admin/apps'
   id:
     | '__root__'
-    | '/_admin'
+    | '/_adminLayout'
     | '/_store'
-    | '/cadastro'
-    | '/login'
+    | '/admin'
     | '/_store/adicionar'
     | '/_store/apps'
     | '/_store/buscar'
     | '/_store/filmes'
     | '/_store/jogos'
     | '/_store/livros'
-    | '/_store/minha-conta'
+    | '/_store/users'
     | '/api/upload'
     | '/_store/'
-    | '/_admin/admin/usuarios'
+    | '/_adminLayout/admin/painel'
+    | '/_adminLayout/admin/usuarios'
     | '/_store/app/$slug'
+    | '/_store/meus-apps/$id'
     | '/api/auth/$'
     | '/api/download/$id'
-    | '/_admin/admin/'
-    | '/_admin/admin/apps/$id'
-    | '/_admin/admin/apps/novo'
-    | '/_admin/admin/apps/'
+    | '/_adminLayout/admin/apps/$id'
+    | '/_adminLayout/admin/apps/novo'
+    | '/_adminLayout/admin/apps/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AdminRoute: typeof AdminRouteWithChildren
+  AdminLayoutRoute: typeof AdminLayoutRouteWithChildren
   StoreRoute: typeof StoreRouteWithChildren
-  CadastroRoute: typeof CadastroRoute
-  LoginRoute: typeof LoginRoute
+  AdminRoute: typeof AdminRoute
   ApiUploadRoute: typeof ApiUploadRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiDownloadIdRoute: typeof ApiDownloadIdRoute
@@ -281,11 +283,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_admin': {
-      id: '/_admin'
+    '/_adminLayout': {
+      id: '/_adminLayout'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AdminRouteImport
+      preLoaderRoute: typeof AdminLayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_store': {
@@ -295,18 +297,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoreRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/cadastro': {
-      id: '/cadastro'
-      path: '/cadastro'
-      fullPath: '/cadastro'
-      preLoaderRoute: typeof CadastroRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_store/': {
@@ -358,11 +353,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StoreLivrosRouteImport
       parentRoute: typeof StoreRoute
     }
-    '/_store/minha-conta': {
-      id: '/_store/minha-conta'
-      path: '/minha-conta'
-      fullPath: '/minha-conta'
-      preLoaderRoute: typeof StoreMinhaContaRouteImport
+    '/_store/users': {
+      id: '/_store/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof StoreUsersRouteImport
       parentRoute: typeof StoreRoute
     }
     '/api/upload': {
@@ -372,25 +367,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_admin/admin/': {
-      id: '/_admin/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminAdminIndexRouteImport
-      parentRoute: typeof AdminRoute
+    '/_adminLayout/admin/painel': {
+      id: '/_adminLayout/admin/painel'
+      path: '/admin/painel'
+      fullPath: '/admin/painel'
+      preLoaderRoute: typeof AdminLayoutAdminPainelRouteImport
+      parentRoute: typeof AdminLayoutRoute
     }
-    '/_admin/admin/usuarios': {
-      id: '/_admin/admin/usuarios'
+    '/_adminLayout/admin/usuarios': {
+      id: '/_adminLayout/admin/usuarios'
       path: '/admin/usuarios'
       fullPath: '/admin/usuarios'
-      preLoaderRoute: typeof AdminAdminUsuariosRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof AdminLayoutAdminUsuariosRouteImport
+      parentRoute: typeof AdminLayoutRoute
     }
     '/_store/app/$slug': {
       id: '/_store/app/$slug'
       path: '/app/$slug'
       fullPath: '/app/$slug'
       preLoaderRoute: typeof StoreAppSlugRouteImport
+      parentRoute: typeof StoreRoute
+    }
+    '/_store/meus-apps/$id': {
+      id: '/_store/meus-apps/$id'
+      path: '/meus-apps/$id'
+      fullPath: '/meus-apps/$id'
+      preLoaderRoute: typeof StoreMeusAppsIdRouteImport
       parentRoute: typeof StoreRoute
     }
     '/api/auth/$': {
@@ -407,47 +409,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDownloadIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_admin/admin/apps/': {
-      id: '/_admin/admin/apps/'
+    '/_adminLayout/admin/apps/': {
+      id: '/_adminLayout/admin/apps/'
       path: '/admin/apps'
       fullPath: '/admin/apps/'
-      preLoaderRoute: typeof AdminAdminAppsIndexRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof AdminLayoutAdminAppsIndexRouteImport
+      parentRoute: typeof AdminLayoutRoute
     }
-    '/_admin/admin/apps/$id': {
-      id: '/_admin/admin/apps/$id'
+    '/_adminLayout/admin/apps/$id': {
+      id: '/_adminLayout/admin/apps/$id'
       path: '/admin/apps/$id'
       fullPath: '/admin/apps/$id'
-      preLoaderRoute: typeof AdminAdminAppsIdRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof AdminLayoutAdminAppsIdRouteImport
+      parentRoute: typeof AdminLayoutRoute
     }
-    '/_admin/admin/apps/novo': {
-      id: '/_admin/admin/apps/novo'
+    '/_adminLayout/admin/apps/novo': {
+      id: '/_adminLayout/admin/apps/novo'
       path: '/admin/apps/novo'
       fullPath: '/admin/apps/novo'
-      preLoaderRoute: typeof AdminAdminAppsNovoRouteImport
-      parentRoute: typeof AdminRoute
+      preLoaderRoute: typeof AdminLayoutAdminAppsNovoRouteImport
+      parentRoute: typeof AdminLayoutRoute
     }
   }
 }
 
-interface AdminRouteChildren {
-  AdminAdminUsuariosRoute: typeof AdminAdminUsuariosRoute
-  AdminAdminIndexRoute: typeof AdminAdminIndexRoute
-  AdminAdminAppsIdRoute: typeof AdminAdminAppsIdRoute
-  AdminAdminAppsNovoRoute: typeof AdminAdminAppsNovoRoute
-  AdminAdminAppsIndexRoute: typeof AdminAdminAppsIndexRoute
+interface AdminLayoutRouteChildren {
+  AdminLayoutAdminPainelRoute: typeof AdminLayoutAdminPainelRoute
+  AdminLayoutAdminUsuariosRoute: typeof AdminLayoutAdminUsuariosRoute
+  AdminLayoutAdminAppsIdRoute: typeof AdminLayoutAdminAppsIdRoute
+  AdminLayoutAdminAppsNovoRoute: typeof AdminLayoutAdminAppsNovoRoute
+  AdminLayoutAdminAppsIndexRoute: typeof AdminLayoutAdminAppsIndexRoute
 }
 
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminAdminUsuariosRoute: AdminAdminUsuariosRoute,
-  AdminAdminIndexRoute: AdminAdminIndexRoute,
-  AdminAdminAppsIdRoute: AdminAdminAppsIdRoute,
-  AdminAdminAppsNovoRoute: AdminAdminAppsNovoRoute,
-  AdminAdminAppsIndexRoute: AdminAdminAppsIndexRoute,
+const AdminLayoutRouteChildren: AdminLayoutRouteChildren = {
+  AdminLayoutAdminPainelRoute: AdminLayoutAdminPainelRoute,
+  AdminLayoutAdminUsuariosRoute: AdminLayoutAdminUsuariosRoute,
+  AdminLayoutAdminAppsIdRoute: AdminLayoutAdminAppsIdRoute,
+  AdminLayoutAdminAppsNovoRoute: AdminLayoutAdminAppsNovoRoute,
+  AdminLayoutAdminAppsIndexRoute: AdminLayoutAdminAppsIndexRoute,
 }
 
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+const AdminLayoutRouteWithChildren = AdminLayoutRoute._addFileChildren(
+  AdminLayoutRouteChildren,
+)
 
 interface StoreRouteChildren {
   StoreAdicionarRoute: typeof StoreAdicionarRoute
@@ -456,9 +460,10 @@ interface StoreRouteChildren {
   StoreFilmesRoute: typeof StoreFilmesRoute
   StoreJogosRoute: typeof StoreJogosRoute
   StoreLivrosRoute: typeof StoreLivrosRoute
-  StoreMinhaContaRoute: typeof StoreMinhaContaRoute
+  StoreUsersRoute: typeof StoreUsersRoute
   StoreIndexRoute: typeof StoreIndexRoute
   StoreAppSlugRoute: typeof StoreAppSlugRoute
+  StoreMeusAppsIdRoute: typeof StoreMeusAppsIdRoute
 }
 
 const StoreRouteChildren: StoreRouteChildren = {
@@ -468,18 +473,18 @@ const StoreRouteChildren: StoreRouteChildren = {
   StoreFilmesRoute: StoreFilmesRoute,
   StoreJogosRoute: StoreJogosRoute,
   StoreLivrosRoute: StoreLivrosRoute,
-  StoreMinhaContaRoute: StoreMinhaContaRoute,
+  StoreUsersRoute: StoreUsersRoute,
   StoreIndexRoute: StoreIndexRoute,
   StoreAppSlugRoute: StoreAppSlugRoute,
+  StoreMeusAppsIdRoute: StoreMeusAppsIdRoute,
 }
 
 const StoreRouteWithChildren = StoreRoute._addFileChildren(StoreRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  AdminRoute: AdminRouteWithChildren,
+  AdminLayoutRoute: AdminLayoutRouteWithChildren,
   StoreRoute: StoreRouteWithChildren,
-  CadastroRoute: CadastroRoute,
-  LoginRoute: LoginRoute,
+  AdminRoute: AdminRoute,
   ApiUploadRoute: ApiUploadRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiDownloadIdRoute: ApiDownloadIdRoute,

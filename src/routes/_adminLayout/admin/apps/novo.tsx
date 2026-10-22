@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { AppForm } from '@/components/app-form'
 import { listCategories } from '@/lib/apps.functions'
 
-export const Route = createFileRoute('/_admin/admin/apps/novo')({
+export const Route = createFileRoute('/_adminLayout/admin/apps/novo')({
   loader: async () => listCategories(),
   component: NewAppPage,
 })

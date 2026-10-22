@@ -8,7 +8,7 @@ Plataforma mobile-first para baixar apps, jogos, filmes e livros, com catálogo 
 - **Tailwind CSS v4** + **shadcn/ui**
 - **Better Auth** (e-mail/senha + plugin admin)
 - **Drizzle ORM** + **PostgreSQL (Supabase)**
-- **Supabase Storage** para logos, banners e arquivos
+- **Supabase Storage** para logos e arquivos
 - Ícones **Lucide**
 
 ## Funcionalidades

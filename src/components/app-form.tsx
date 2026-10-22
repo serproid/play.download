@@ -14,7 +14,11 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { adminSaveApp, submitApp } from '@/lib/apps.functions'
+import {
+  adminSaveApp,
+  submitApp,
+  updateMyApp,
+} from '@/lib/apps.functions'
 import type { AdminApp, AppInput } from '@/lib/types'
 import type { AppStatus, AppType } from '@/lib/db/schema'
 import { cn, formatFileSize } from '@/lib/utils'
@@ -96,13 +100,9 @@ export function AppForm({
   )
   const [status, setStatus] = useState<AppStatus>(initial?.status ?? 'pending')
   const [featured, setFeatured] = useState(initial?.featured ?? false)
-  const [screenshotsText, setScreenshotsText] = useState(
-    (initial?.screenshots ?? []).join('\n'),
-  )
   const [pending, setPending] = useState(false)
   const [uploading, setUploading] = useState<string | null>(null)
   const iconInput = useRef<HTMLInputElement>(null)
-  const bannerInput = useRef<HTMLInputElement>(null)
   const fileInput = useRef<HTMLInputElement>(null)
 
   const filteredCategories = categories.filter(
@@ -162,13 +162,7 @@ export function AppForm({
       return
     }
 
-    const payload: AppInput = {
-      ...form,
-      screenshots: screenshotsText
-        .split('\n')
-        .map((line) => line.trim())
-        .filter(Boolean),
-    }
+    const payload: AppInput = { ...form, screenshots: [] }
 
     setPending(true)
     try {
@@ -187,11 +181,22 @@ export function AppForm({
           to: '/admin/apps',
           search: { status: undefined },
         })
+      } else if (initial) {
+        await updateMyApp({ data: { ...payload, id: initial.id } })
+        toast.success('App atualizado.')
+        await router.invalidate()
+        await router.navigate({
+          to: '/users',
+          search: { redirect: undefined, mode: undefined },
+        })
       } else {
         await submitApp({ data: payload })
         toast.success('App enviado! Ele será analisado pela nossa equipe.')
         await router.invalidate()
-        await router.navigate({ to: '/minha-conta' })
+        await router.navigate({
+          to: '/users',
+          search: { redirect: undefined, mode: undefined },
+        })
       }
     } catch (error) {
       toast.error(
@@ -391,7 +396,7 @@ export function AppForm({
               <button
                 type="button"
                 onClick={() => fileInput.current?.click()}
-                className="inline-flex h-9 items-center gap-2 rounded-full bg-brand px-4 text-xs font-bold text-brand-foreground"
+                className="inline-flex h-9 items-center gap-2 rounded-full bg-brand px-4 text-xs font-medium text-white"
               >
                 {uploading === 'file' ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -408,19 +413,19 @@ export function AppForm({
                     update('fileName', '')
                     update('fileSize', null)
                   }}
-                  className="inline-flex h-9 items-center gap-1 rounded-full px-2 text-xs font-medium text-muted-foreground hover:text-destructive"
+                  className="inline-flex h-9 items-center gap-1 rounded-full px-2 text-xs font-medium text-[#5f6368] hover:text-destructive"
                 >
                   <X className="size-3.5" /> Remover
                 </button>
               ) : null}
             </div>
             {form.fileUrl ? (
-              <p className="mt-2 truncate text-[11px] text-muted-foreground">
+              <p className="mt-2 truncate text-[11px] text-[#5f6368]">
                 {form.fileName || form.fileUrl}
                 {form.fileSize ? ` · ${formatFileSize(form.fileSize)}` : ''}
               </p>
             ) : (
-              <p className="mt-2 text-[11px] text-muted-foreground">
+              <p className="mt-2 text-[11px] text-[#5f6368]">
                 APK, PDF, EPUB, ZIP ou MP4 · até 100 MB. Você também pode colar
                 um link abaixo.
               </p>
@@ -438,46 +443,6 @@ export function AppForm({
               onChange={(event) => {
                 const file = event.target.files?.[0]
                 if (file) void upload(file, 'file')
-                event.target.value = ''
-              }}
-            />
-          </div>
-
-          <Field label="Capturas de tela (uma URL por linha)">
-            <Textarea
-              value={screenshotsText}
-              onChange={(event) => setScreenshotsText(event.target.value)}
-              placeholder={'https://.../tela-1.png\nhttps://.../tela-2.png'}
-              rows={3}
-            />
-          </Field>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => bannerInput.current?.click()}
-              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border px-3 text-[11px] font-semibold hover:bg-accent"
-            >
-              {uploading === 'bannerUrl' ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <ImagePlus className="size-3.5" />
-              )}
-              Enviar banner
-            </button>
-            {form.bannerUrl ? (
-              <span className="max-w-[220px] truncate text-[10px] text-muted-foreground">
-                {form.bannerUrl}
-              </span>
-            ) : null}
-            <input
-              ref={bannerInput}
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0]
-                if (file) void upload(file, 'bannerUrl')
                 event.target.value = ''
               }}
             />

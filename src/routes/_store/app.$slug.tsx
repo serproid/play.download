@@ -1,19 +1,10 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
-import {
-  CalendarDays,
-  ChevronRight,
-  Download,
-  Info,
-  ThumbsUp,
-} from 'lucide-react'
+import { Info, Star, ThumbsUp } from 'lucide-react'
 import { AppIcon } from '@/components/store/app-icon'
 import {
   DeviceNote,
   InstallButton,
-  ShareButton,
-  WishlistButton,
 } from '@/components/store/app-actions'
-import { ReviewForm } from '@/components/store/review-form'
 import { Stars } from '@/components/store/stars'
 import { getAppDetail } from '@/lib/apps.functions'
 import type { AppDetail } from '@/lib/types'
@@ -35,21 +26,37 @@ const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
   year: 'numeric',
 })
 
-const avatarPalettes = [
-  'bg-[#e91e63]',
-  'bg-[#2196f3]',
-  'bg-[#ff9800]',
-  'bg-[#8e24aa]',
-  'bg-[#00897b]',
-  'bg-[#5c6bc0]',
-]
+const avatarColors: Record<string, string> = {
+  A: 'bg-[#e91e63]',
+  B: 'bg-[#9c27b0]',
+  C: 'bg-[#3f51b5]',
+  D: 'bg-[#2196f3]',
+  E: 'bg-[#009688]',
+  F: 'bg-[#e91e63]',
+  G: 'bg-[#ff9800]',
+  H: 'bg-[#795548]',
+  I: 'bg-[#607d8b]',
+  J: 'bg-[#f44336]',
+  K: 'bg-[#673ab7]',
+  L: 'bg-[#2196f3]',
+  M: 'bg-[#009688]',
+  N: 'bg-[#8bc34a]',
+  O: 'bg-[#ff5722]',
+  P: 'bg-[#03a9f4]',
+  Q: 'bg-[#9c27b0]',
+  R: 'bg-[#4caf50]',
+  S: 'bg-[#ff9800]',
+  T: 'bg-[#00bcd4]',
+  U: 'bg-[#3f51b5]',
+  V: 'bg-[#e91e63]',
+  W: 'bg-[#009688]',
+  X: 'bg-[#795548]',
+  Y: 'bg-[#ffc107]',
+  Z: 'bg-[#607d8b]',
+}
 
-function avatarTone(name: string) {
-  let hash = 0
-  for (let index = 0; index < name.length; index += 1) {
-    hash = (hash * 17 + name.charCodeAt(index)) % 997
-  }
-  return avatarPalettes[hash % avatarPalettes.length]
+function avatarColor(name: string) {
+  return avatarColors[name.charAt(0).toUpperCase()] ?? 'bg-[#5f6368]'
 }
 
 function ageBox(ageRating: string | null) {
@@ -57,12 +64,17 @@ function ageBox(ageRating: string | null) {
   return ageRating.replace(/\D/g, '') || 'L'
 }
 
+function ratingLabel(value: number) {
+  return value.toFixed(1).replace('.', ',')
+}
+
 function AppDetailPage() {
   const app: AppDetail = Route.useLoaderData()
-  const { user } = Route.useRouteContext()
   const totalReviews = app.reviewCount || app.reviews.length
-  const distributionTotal =
-    [1, 2, 3, 4, 5].reduce((sum, star) => sum + app.distribution[star as 1 | 2 | 3 | 4 | 5], 0) || 1
+  const counts = [1, 2, 3, 4, 5].map(
+    (star) => app.distribution[star as 1 | 2 | 3 | 4 | 5] ?? 0,
+  )
+  const maxCount = Math.max(...counts, 1)
 
   const infoRows: Array<[string, React.ReactNode]> = [
     ['Atualizado em', dateFormatter.format(new Date(app.updatedAt))],
@@ -70,119 +82,98 @@ function AppDetailPage() {
     ['Downloads', `${formatCount(app.downloads)}+`],
     ['Versão atual', app.version ?? '1.0'],
     ['Android necessário', app.requirements ?? 'Android 8.0 ou superior'],
-    ['Desenvolvedor', <span className="text-brand">{app.developer ?? 'Comunidade'}</span>],
+    [
+      'Desenvolvedor',
+      <span className="font-medium text-brand">
+        {app.developer ?? 'Comunidade'}
+      </span>,
+    ],
     ['Categoria', app.categoryName ?? 'Geral'],
-    ['Classificação', app.ageRating ?? 'Livre'],
   ]
 
   return (
-    <article className="animate-rise-in">
+    <article className="py-4">
       <header className="flex items-start gap-4 sm:gap-5">
         <AppIcon
           name={app.name}
           iconUrl={app.iconUrl}
           size="lg"
-          className="sm:size-28"
+          className="size-20 rounded-[18px] sm:size-24 sm:rounded-[20px]"
         />
-        <div className="min-w-0 flex-1 pt-0.5">
-          <h1 className="text-[25px] leading-tight font-extrabold tracking-tight text-foreground sm:text-3xl">
+        <div className="min-w-0 flex-1 pt-1">
+          <h1 className="text-[25px] leading-tight font-normal text-foreground sm:text-[28px]">
             {app.name}
           </h1>
-          <p className="mt-1 text-sm font-semibold text-brand">
-            {app.developer ?? 'Comunidade Play Download'}
-          </p>
-          <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground sm:text-sm">
-            {app.tagline}
+          <p className="mt-1 text-sm font-medium text-brand">
+            {app.developer ?? 'Comunidade'}
           </p>
         </div>
       </header>
 
-      <div className="mt-5 grid grid-cols-3 divide-x divide-border border-y border-border py-3">
-        <div className="flex flex-col items-center justify-center px-1 text-center">
-          <span className="flex items-center gap-1 text-lg font-bold text-foreground">
-            {app.rating.toFixed(1)}
-            <span className="text-[#f5b301]">★</span>
+      <div className="mt-5 grid grid-cols-3 divide-x divide-border border-y border-border">
+        <div className="flex flex-col items-center justify-center px-2 py-4 text-center">
+          <span className="flex items-center gap-1 text-[17px] font-normal text-foreground">
+            {ratingLabel(app.rating)}
+            <Star className="size-3.5 fill-[#fbbc04] text-[#fbbc04]" />
           </span>
-          <span className="mt-0.5 text-[10px] text-muted-foreground sm:text-[11px]">
+          <span className="mt-1 text-[11px] text-[#5f6368] dark:text-[#9aa0a6] sm:text-xs">
             {formatCount(totalReviews)} avaliações
           </span>
         </div>
-        <div className="flex flex-col items-center justify-center px-1 text-center">
-          <span className="flex size-7 items-center justify-center rounded-md bg-brand text-xs font-bold text-brand-foreground">
+        <div className="flex flex-col items-center justify-center px-2 py-4 text-center">
+          <span className="flex size-6 items-center justify-center rounded bg-brand text-[11px] font-medium text-white">
             {ageBox(app.ageRating)}
           </span>
-          <span className="mt-1 flex items-center gap-0.5 text-[10px] text-muted-foreground sm:text-[11px]">
-            Classificação {app.ageRating?.toLowerCase() === 'livre' ? 'Livre' : 'indicativa'}
-            <Info className="size-2.5 opacity-70" />
+          <span className="mt-1 flex items-center gap-0.5 text-[11px] text-[#5f6368] dark:text-[#9aa0a6] sm:text-xs">
+            Classificação{' '}
+            {app.ageRating?.toLowerCase() === 'livre' ? 'Livre' : 'indicativa'}
+            <Info className="size-3" />
           </span>
         </div>
-        <div className="flex flex-col items-center justify-center px-1 text-center">
-          <span className="flex items-center gap-1 text-lg font-bold text-foreground">
-            <Download className="size-4 text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center px-2 py-4 text-center">
+          <span className="text-[17px] font-normal text-foreground">
             {formatCount(app.downloads)}+
           </span>
-          <span className="mt-0.5 text-[10px] text-muted-foreground sm:text-[11px]">
+          <span className="mt-1 text-[11px] text-[#5f6368] dark:text-[#9aa0a6] sm:text-xs">
             downloads
           </span>
         </div>
       </div>
 
-      <div className="mt-4 space-y-2.5">
+      <div className="mt-6">
         <InstallButton app={app} />
-        <div className="flex flex-wrap items-center justify-center gap-1">
-          <ShareButton app={app} />
-          <WishlistButton app={app} user={user} />
+        <div className="mt-3">
+          <DeviceNote />
         </div>
-        <DeviceNote />
       </div>
 
-      {app.screenshots.length > 0 ? (
-        <section className="mt-6 border-t border-border pt-5">
-          <h2 className="text-lg font-bold tracking-tight text-foreground">
-            Capturas de tela
-          </h2>
-          <div className="no-scrollbar -mx-4 mt-3 flex gap-2.5 overflow-x-auto px-4">
-            {app.screenshots.map((url) => (
-              <img
-                key={url}
-                src={url}
-                alt={`Captura de tela de ${app.name}`}
-                loading="lazy"
-                className="h-56 shrink-0 rounded-2xl border border-border object-cover shadow-sm"
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      <section className="mt-6 border-t border-border pt-5">
-        <h2 className="text-lg font-bold tracking-tight text-foreground">
+      <section className="mt-6 border-t border-border pt-6">
+        <h2 className="text-xl font-normal text-foreground">
           Avaliações e comentários
         </h2>
 
-        <div className="mt-3 grid grid-cols-[auto_1fr] items-center gap-5 sm:gap-10">
-          <div className="text-center">
-            <p className="text-5xl leading-none font-light tracking-tight text-foreground">
-              {app.rating.toFixed(1)}
+        <div className="mt-4 grid grid-cols-[auto_1fr] items-center gap-8 sm:gap-14">
+          <div>
+            <p className="text-[48px] leading-none font-normal tracking-tight text-foreground">
+              {ratingLabel(app.rating)}
             </p>
-            <Stars value={app.rating} size={16} className="mt-1.5" />
-            <p className="mt-1 text-[11px] text-muted-foreground">
+            <Stars value={app.rating} size={20} className="mt-1" />
+            <p className="mt-1 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
               {formatCount(totalReviews)} avaliações
             </p>
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {[5, 4, 3, 2, 1].map((star) => {
-              const count =
-                app.distribution[star as 1 | 2 | 3 | 4 | 5] ?? 0
-              const percent = Math.min(100, Math.round((count / distributionTotal) * 100))
+              const count = app.distribution[star as 1 | 2 | 3 | 4 | 5] ?? 0
+              const percent = Math.round((count / maxCount) * 100)
               return (
-                <div key={star} className="flex items-center gap-2">
-                  <span className="w-2 shrink-0 text-[11px] text-muted-foreground">
+                <div key={star} className="flex items-center gap-4">
+                  <span className="w-2 text-right text-xs text-[#5f6368] dark:text-[#9aa0a6]">
                     {star}
                   </span>
-                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#e8eaed] dark:bg-[#3c4043]">
                     <div
-                      className="h-full rounded-full bg-brand transition-[width]"
+                      className="h-full rounded-full bg-brand"
                       style={{ width: `${percent}%` }}
                     />
                   </div>
@@ -192,19 +183,15 @@ function AppDetailPage() {
           </div>
         </div>
 
-        <div className="mt-4">
-          <ReviewForm app={app} user={user} />
-        </div>
-
         {app.reviews.length > 0 ? (
-          <div className="mt-2 divide-y divide-border">
+          <div className="mt-4 divide-y divide-border border-t border-border">
             {app.reviews.map((review) => (
-              <div key={review.id} className="py-4">
-                <div className="flex items-center gap-2.5">
+              <div key={review.id} className="py-5">
+                <div className="flex items-center gap-3">
                   <span
                     className={cn(
-                      'flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white',
-                      avatarTone(review.userName),
+                      'flex size-11 shrink-0 items-center justify-center rounded-full text-base font-medium text-white',
+                      avatarColor(review.userName),
                     )}
                   >
                     {review.userImage ? (
@@ -217,77 +204,63 @@ function AppDetailPage() {
                       review.userName.charAt(0).toUpperCase()
                     )}
                   </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
                       {review.userName}
                     </p>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <Stars value={review.rating} size={12} />
-                      <span className="text-[11px] text-muted-foreground">
-                        {dateFormatter.format(new Date(review.createdAt))}
-                      </span>
-                    </div>
                   </div>
                 </div>
-                {review.comment ? (
-                  <p className="mt-2 text-[13px] leading-5 text-foreground/85">
-                    {review.comment}
+                <div className="mt-3 pl-14">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Stars value={review.rating} size={14} />
+                    <span className="text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+                      {dateFormatter.format(new Date(review.createdAt))}
+                    </span>
+                  </div>
+                  {review.comment ? (
+                    <p className="mt-2 text-sm leading-5 text-foreground">
+                      {review.comment}
+                    </p>
+                  ) : null}
+                  <p className="mt-2 flex items-center gap-1 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
+                    <ThumbsUp className="size-3" />
+                    {review.helpfulCount} pessoas acharam isso útil
                   </p>
-                ) : null}
-                <p className="mt-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-                  <ThumbsUp className="size-3" />
-                  {review.helpfulCount} pessoas acharam isso útil
-                </p>
+                </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="mt-3 rounded-2xl border border-dashed border-border px-4 py-6 text-center text-xs text-muted-foreground">
-            Ainda não há avaliações. Seja a primeira pessoa a avaliar!
+          <p className="mt-6 text-sm text-[#5f6368] dark:text-[#9aa0a6]">
+            Ainda não há avaliações.
           </p>
         )}
       </section>
 
-      <section className="mt-6 border-t border-border pt-5">
-        <h2 className="text-lg font-bold tracking-tight text-foreground">
+      <section className="mt-6 border-t border-border pt-6">
+        <h2 className="text-base font-medium text-foreground">
           Informações do aplicativo
         </h2>
-        <dl className="mt-1.5 divide-y divide-border/80">
+        <dl className="mt-2">
           {infoRows.map(([label, value]) => (
             <div
               key={label}
-              className="flex items-center justify-between gap-6 py-2.5"
+              className="flex items-center justify-between gap-6 py-3"
             >
-              <dt className="text-[13px] text-muted-foreground">{label}</dt>
-              <dd className="text-right text-[13px] font-medium text-foreground">
-                {value}
-              </dd>
+              <dt className="text-sm text-[#5f6368] dark:text-[#9aa0a6]">
+                {label}
+              </dt>
+              <dd className="text-right text-sm text-foreground">{value}</dd>
             </div>
           ))}
         </dl>
       </section>
 
-      <section className="mt-6 border-t border-border pt-5">
-        <h2 className="text-lg font-bold tracking-tight text-foreground">
-          Sobre este app
-        </h2>
-        <div className="mt-2 space-y-3 text-[13px] leading-6 whitespace-pre-line text-foreground/80">
+      <section className="mt-6 border-t border-border pt-6">
+        <h2 className="text-base font-medium text-foreground">Sobre este app</h2>
+        <p className="mt-3 text-sm leading-6 whitespace-pre-line text-foreground">
           {app.description ?? app.tagline ?? 'Sem descrição disponível.'}
-        </div>
-        <div className="mt-4 flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <CalendarDays className="size-4" />
-            Atualizado em {dateFormatter.format(new Date(app.updatedAt))}
-          </div>
-          <Link
-            to="/buscar"
-            search={{ q: app.categoryName ?? undefined }}
-            className="inline-flex items-center gap-0.5 text-xs font-semibold text-brand"
-          >
-            Mais como este
-            <ChevronRight className="size-4" />
-          </Link>
-        </div>
+        </p>
       </section>
     </article>
   )
@@ -296,20 +269,18 @@ function AppDetailPage() {
 function AppNotFound() {
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-      <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-soft text-brand">
-        <Info className="size-6" />
-      </div>
-      <h1 className="mt-4 text-xl font-bold text-foreground">
+      <Info className="size-8 text-[#5f6368]" />
+      <h1 className="mt-3 text-lg font-medium text-foreground">
         Aplicativo não encontrado
       </h1>
-      <p className="mt-1 max-w-xs text-xs leading-5 text-muted-foreground">
-        Este título pode ter sido removido ou ainda não foi publicado.
+      <p className="mt-1 text-sm text-[#5f6368]">
+        Este título pode ter sido removido.
       </p>
       <Link
         to="/"
-        className="mt-4 rounded-full bg-brand px-5 py-2 text-xs font-bold text-brand-foreground"
+        className="mt-4 rounded-full bg-brand px-5 py-2 text-sm font-medium text-white"
       >
-        Voltar para o início
+        Voltar ao início
       </Link>
     </div>
   )

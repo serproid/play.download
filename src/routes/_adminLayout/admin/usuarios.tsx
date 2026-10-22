@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { UsersManager } from '@/components/admin/users-manager'
 import { adminListUsers } from '@/lib/apps.functions'
 
-export const Route = createFileRoute('/_admin/admin/usuarios')({
+export const Route = createFileRoute('/_adminLayout/admin/usuarios')({
   loader: async () => adminListUsers({ data: {} }),
   component: UsersPage,
 })

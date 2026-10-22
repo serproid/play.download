@@ -1,6 +1,5 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { PackageOpen, Search } from 'lucide-react'
-import { AppGridCard } from '@/components/store/app-cards'
+import { createFileRoute } from '@tanstack/react-router'
+import { AppRankRow } from '@/components/store/app-cards'
 import { SearchField } from '@/components/store/search-field'
 import { EmptyState } from '@/components/store/section'
 import { listApps } from '@/lib/apps.functions'
@@ -16,78 +15,37 @@ export const Route = createFileRoute('/_store/buscar')({
   component: BuscarPage,
 })
 
-const suggestions = [
-  'Jogos',
-  'Redes sociais',
-  'Produtividade',
-  'Filmes',
-  'Livros',
-]
-
 function BuscarPage() {
   const apps: CatalogApp[] = Route.useLoaderData()
   const { q } = Route.useSearch()
 
   return (
-    <div className="space-y-5 animate-rise-in">
-      <header>
-        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
-          Buscar
-        </h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          Encontre apps, jogos, filmes e livros em um só lugar.
-        </p>
-      </header>
+    <div className="space-y-4 py-2">
+      <h1 className="text-[22px] font-normal text-foreground">Pesquisar</h1>
 
       <SearchField action="/buscar" defaultValue={q} autoFocus />
 
-      {!q ? (
-        <div className="space-y-3">
-          <p className="text-xs font-semibold text-muted-foreground">
-            Sugestões
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {suggestions.map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-          <EmptyState
-            icon={<Search className="size-6" />}
-            title="Digite para começar"
-            description="Busque pelo nome do app, jogo, filme ou livro que você procura."
-            className="mt-6"
-          />
-        </div>
-      ) : apps.length > 0 ? (
-        <div className="space-y-3">
-          <p className="text-xs font-medium text-muted-foreground">
+      {q && apps.length > 0 ? (
+        <>
+          <p className="text-[13px] text-[#5f6368] dark:text-[#9aa0a6]">
             {apps.length} {apps.length === 1 ? 'resultado' : 'resultados'} para “
             {q}”
           </p>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          <div className="divide-y divide-border">
             {apps.map((app) => (
-              <AppGridCard key={app.id} app={app} />
+              <AppRankRow key={app.id} app={app} />
             ))}
           </div>
-        </div>
-      ) : (
+        </>
+      ) : q ? (
         <EmptyState
-          icon={<PackageOpen className="size-6" />}
           title="Nenhum resultado encontrado"
-          description={`Não encontramos nada para “${q}”. Tente outro termo ou envie o seu app para a plataforma.`}
-        >
-          <Link
-            to="/adicionar"
-            className="inline-flex h-9 items-center rounded-full bg-brand px-4 text-xs font-bold text-brand-foreground"
-          >
-            Adicionar app
-          </Link>
-        </EmptyState>
+          description={`Não encontramos nada para “${q}”. Tente outro termo.`}
+        />
+      ) : (
+        <p className="py-8 text-center text-[13px] text-[#5f6368] dark:text-[#9aa0a6]">
+          Digite o nome de um app, jogo, filme ou livro.
+        </p>
       )}
     </div>
   )

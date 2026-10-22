@@ -21,9 +21,8 @@ export const Route = createFileRoute('/_store')({
 })
 
 function StoreLayout() {
-  const { user } = Route.useRouteContext()
   return (
-    <StoreShell user={user}>
+    <StoreShell>
       <Outlet />
     </StoreShell>
   )

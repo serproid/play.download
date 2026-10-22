@@ -6,7 +6,7 @@ export function SearchField({
   action,
   defaultValue = '',
   category,
-  placeholder = 'Buscar apps, jogos, filmes e livros',
+  placeholder = 'Pesquisar apps e jogos',
   autoFocus,
   className,
 }: {
@@ -26,7 +26,7 @@ export function SearchField({
       className={cn('relative', className)}
       role="search"
     >
-      <Search className="pointer-events-none absolute top-1/2 left-4 size-[18px] -translate-y-1/2 text-muted-foreground" />
+      <Search className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-[#5f6368] dark:text-[#9aa0a6]" />
       <input
         type="search"
         name="q"
@@ -34,8 +34,8 @@ export function SearchField({
         onChange={(event) => setValue(event.target.value)}
         placeholder={placeholder}
         autoFocus={autoFocus}
-        className="h-12 w-full rounded-2xl border border-border bg-card pr-4 pl-11 text-sm text-foreground shadow-[0_1px_2px_rgba(16,24,20,0.04)] outline-none transition-shadow placeholder:text-muted-foreground/80 focus:border-brand/40 focus:ring-4 focus:ring-brand/10"
-        aria-label="Buscar"
+        className="h-12 w-full rounded-full bg-[#f1f3f4] pr-4 pl-12 text-[15px] text-foreground outline-none placeholder:text-[#5f6368] focus:bg-white focus:ring-1 focus:ring-border dark:bg-[#303134] dark:focus:bg-[#303134]"
+        aria-label="Pesquisar"
       />
       {category ? <input type="hidden" name="category" value={category} /> : null}
     </form>

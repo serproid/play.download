@@ -555,6 +555,96 @@ export const adminGetApp = createServerFn({ method: 'GET' })
     }
   })
 
+export const getMyApp = createServerFn({ method: 'GET' })
+  .validator((input: { id: string }) => input)
+  .handler(async ({ data }): Promise<AdminApp | null> => {
+    const session = await requireUser()
+
+    const [row] = await db
+      .select({
+        ...catalogSelection,
+        description: apps.description,
+        version: apps.version,
+        size: apps.size,
+        requirements: apps.requirements,
+        screenshots: apps.screenshots,
+        fileUrl: apps.fileUrl,
+        fileName: apps.fileName,
+        fileSize: apps.fileSize,
+        categoryId: apps.categoryId,
+        submittedBy: apps.submittedBy,
+        submittedByName: user.name,
+        createdAt: apps.createdAt,
+      })
+      .from(apps)
+      .leftJoin(categories, eq(apps.categoryId, categories.id))
+      .leftJoin(user, eq(apps.submittedBy, user.id))
+      .where(
+        and(eq(apps.id, data.id), eq(apps.submittedBy, session.user.id)),
+      )
+      .limit(1)
+
+    if (!row) return null
+
+    return {
+      ...toCatalogApp(row),
+      description: row.description,
+      version: row.version,
+      size: row.size,
+      requirements: row.requirements,
+      screenshots: row.screenshots ?? [],
+      fileUrl: row.fileUrl,
+      fileName: row.fileName,
+      fileSize: row.fileSize,
+      categoryId: row.categoryId,
+      submittedBy: row.submittedBy,
+      submittedByName: row.submittedByName,
+      createdAt: row.createdAt.toISOString(),
+    }
+  })
+
+export const updateMyApp = createServerFn({ method: 'POST' })
+  .validator((input: AppInput & { id: string }) => input)
+  .handler(async ({ data }) => {
+    const session = await requireUser()
+
+    const [existing] = await db
+      .select({ submittedBy: apps.submittedBy })
+      .from(apps)
+      .where(eq(apps.id, data.id))
+      .limit(1)
+
+    if (!existing || existing.submittedBy !== session.user.id) {
+      throw new Error('Voc? s? pode editar os apps que enviou.')
+    }
+
+    if (!data.name?.trim()) throw new Error('Informe o nome do app.')
+
+    await db
+      .update(apps)
+      .set({
+        name: data.name.trim(),
+        type: data.type,
+        tagline: normalizeText(data.tagline),
+        description: normalizeText(data.description),
+        developer: normalizeText(data.developer),
+        version: normalizeText(data.version),
+        size: normalizeText(data.size),
+        requirements: normalizeText(data.requirements),
+        ageRating: normalizeText(data.ageRating) ?? 'Livre',
+        categoryId: data.categoryId || null,
+        iconUrl: normalizeText(data.iconUrl),
+        bannerUrl: normalizeText(data.bannerUrl),
+        screenshots: data.screenshots.filter(Boolean),
+        fileUrl: normalizeText(data.fileUrl),
+        fileName: normalizeText(data.fileName),
+        fileSize: data.fileSize,
+      })
+      .where(eq(apps.id, data.id))
+
+    return { id: data.id }
+  })
+
 async function persistApp(
   data: AppInput & {
     id?: string

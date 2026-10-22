@@ -7,7 +7,7 @@ import { adminListApps } from '@/lib/apps.functions'
 import type { AdminApp } from '@/lib/types'
 import { cn, formatCount } from '@/lib/utils'
 
-export const Route = createFileRoute('/_admin/admin/apps/')({
+export const Route = createFileRoute('/_adminLayout/admin/apps/')({
   validateSearch: (search: Record<string, unknown>) => ({
     status:
       search.status === 'pending' ||

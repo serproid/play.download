@@ -15,7 +15,7 @@ import { adminListApps, adminStats } from '@/lib/apps.functions'
 import type { AdminApp } from '@/lib/types'
 import { formatCount } from '@/lib/utils'
 
-export const Route = createFileRoute('/_admin/admin/')({
+export const Route = createFileRoute('/_adminLayout/admin/painel')({
   loader: async () => {
     const [stats, apps] = await Promise.all([adminStats(), adminListApps()])
     return { stats, apps }

@@ -5,7 +5,7 @@ import {
   listCategories,
 } from '@/lib/apps.functions'
 
-export const Route = createFileRoute('/_admin/admin/apps/$id')({
+export const Route = createFileRoute('/_adminLayout/admin/apps/$id')({
   loader: async ({ params }) => {
     const [app, categories] = await Promise.all([
       adminGetApp({ data: { id: params.id } }),

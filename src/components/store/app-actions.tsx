@@ -1,154 +1,80 @@
-import { useRouter } from '@tanstack/react-router'
-import {
-  Check,
-  Download,
-  Heart,
-  Share2,
-  Smartphone,
-  Info,
-} from 'lucide-react'
+import { ArrowUp, Download, Info } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { toggleWishlist } from '@/lib/apps.functions'
-import type { AppDetail, SessionUser } from '@/lib/types'
-import { cn } from '@/lib/utils'
+import type { AppDetail } from '@/lib/types'
 
 export function InstallButton({ app }: { app: AppDetail }) {
-  return (
-    <a
-      href={`/api/download/${app.id}`}
-      onClick={(event) => {
-        if (!app.fileUrl) {
-          event.preventDefault()
-          toast.info(
-            app.status === 'published'
-              ? 'O arquivo deste título ainda não está disponível para download.'
-              : 'Este título ainda não está publicado.',
-          )
-        }
-      }}
-      className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-brand text-sm font-bold text-brand-foreground shadow-[0_10px_24px_-14px_rgba(13,138,79,0.9)] transition-transform hover:scale-[1.005] active:scale-[0.99]"
-    >
-      <Download className="size-4" strokeWidth={2.4} />
-      Instalar
-    </a>
-  )
-}
+  const [open, setOpen] = useState(false)
 
-export function ShareButton({ app }: { app: AppDetail }) {
-  const [copied, setCopied] = useState(false)
-
-  async function handleShare() {
-    const url = window.location.href
-    const payload = {
-      title: app.name,
-      text: app.tagline ?? `Conheça ${app.name} no Play Download`,
-      url,
-    }
-
-    if (navigator.share) {
-      try {
-        await navigator.share(payload)
-        return
-      } catch {
-        return
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      toast.success('Link copiado para a área de transferência.')
-      window.setTimeout(() => setCopied(false), 2000)
-    } catch {
-      toast.error('Não foi possível compartilhar agora.')
-    }
-  }
-
-  return (
-    <button
-      onClick={handleShare}
-      className="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold text-brand transition-colors hover:bg-brand-soft"
-    >
-      {copied ? <Check className="size-4" /> : <Share2 className="size-4" />}
-      Compartilhar
-    </button>
-  )
-}
-
-export function WishlistButton({
-  app,
-  user,
-}: {
-  app: AppDetail
-  user: SessionUser | null
-}) {
-  const router = useRouter()
-  const [inWishlist, setInWishlist] = useState(app.inWishlist)
-  const [pending, setPending] = useState(false)
-
-  async function handleToggle() {
-    if (!user) {
-      await router.navigate({
-        to: '/login',
-        search: { redirect: `/app/${app.slug}` },
-      })
+  function confirmDownload() {
+    setOpen(false)
+    if (!app.fileUrl) {
+      toast.info('O arquivo deste app ainda não está disponível.')
       return
     }
-
-    setPending(true)
-    try {
-      const result = await toggleWishlist({ data: { appId: app.id } })
-      setInWishlist(result.inWishlist)
-      toast.success(
-        result.inWishlist
-          ? 'Adicionado à sua lista de desejos.'
-          : 'Removido da sua lista de desejos.',
-      )
-      await router.invalidate()
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Não foi possível atualizar.',
-      )
-    } finally {
-      setPending(false)
-    }
+    window.location.assign(`/api/download/${app.id}`)
   }
 
   return (
-    <button
-      onClick={handleToggle}
-      disabled={pending}
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-semibold transition-colors disabled:opacity-60',
-        inWishlist
-          ? 'text-brand hover:bg-brand-soft'
-          : 'text-muted-foreground hover:bg-accent hover:text-foreground',
-      )}
-    >
-      <Heart
-        className={cn('size-4', inWishlist && 'fill-current text-brand')}
-        strokeWidth={2}
-      />
-      {inWishlist ? 'Na lista de desejos' : 'Adicionar à lista de desejos'}
-    </button>
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-brand text-sm font-medium text-white hover:brightness-95 active:brightness-90"
+      >
+        <Download className="size-[18px]" strokeWidth={2} />
+        Instalar
+      </button>
+
+      {open ? (
+        <div
+          className="fixed inset-0 z-50 bg-black/55"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="install-notice-title"
+        >
+          <div className="absolute inset-x-0 bottom-[72px] mx-auto w-full max-w-[460px] px-3">
+            <div className="relative animate-rise-in rounded-[22px] border-2 border-[#f6c344] bg-white px-4 pt-5 pb-4 text-center shadow-[0_10px_40px_rgba(0,0,0,0.28)]">
+              <ArrowUp
+                className="animate-arrow-rise absolute -top-[72px] right-8 size-12 text-[#fbbc04]"
+                strokeWidth={3.2}
+                aria-hidden
+              />
+              <h2
+                id="install-notice-title"
+                className="text-[17px] font-bold text-[#202124]"
+              >
+                Falta só um passo!
+              </h2>
+              <p className="mt-2 text-[13px] leading-5 text-[#3c4043]">
+                Toque em{' '}
+                <strong className="font-bold">
+                  “Baixar mesmo assim ou Fazer download mesmo assim”
+                </strong>{' '}
+                para download do aplicativo para começar.
+              </p>
+              <p className="mt-2 text-[13px] leading-5 text-[#3c4043]">
+                A opção fica no meio da tela do aparelho, ao lado de{' '}
+                <strong className="font-bold">“Cancelar”</strong>.
+              </p>
+              <button
+                onClick={confirmDownload}
+                className="mt-4 flex h-11 w-full items-center justify-center rounded-full bg-brand text-sm font-medium text-white active:brightness-90"
+              >
+                Entendi
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   )
 }
 
 export function DeviceNote() {
   return (
-    <p className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+    <p className="flex items-center justify-center gap-1.5 text-xs text-[#5f6368] dark:text-[#9aa0a6]">
       <Info className="size-3.5" />
-      Este app está disponível para o seu dispositivo
+      Este app está disponível para seu dispositivo
     </p>
-  )
-}
-
-export function CompatibilityBadge({ label }: { label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-      <Smartphone className="size-3" />
-      {label}
-    </span>
   )
 }

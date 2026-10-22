@@ -2,17 +2,17 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 import { AdminShell } from '@/components/admin/admin-shell'
 import { getSession, hasAdminRole } from '@/lib/auth.functions'
 
-export const Route = createFileRoute('/_admin')({
-  beforeLoad: async ({ location }) => {
+export const Route = createFileRoute('/_adminLayout')({
+  beforeLoad: async () => {
     const session = await getSession()
     if (!session) {
-      throw redirect({
-        to: '/login',
-        search: { redirect: location.href },
-      })
+      throw redirect({ to: '/admin' })
     }
     if (!hasAdminRole(session.user.role)) {
-      throw redirect({ to: '/' })
+      throw redirect({
+        to: '/users',
+        search: { redirect: undefined, mode: undefined },
+      })
     }
     return {
       user: {
