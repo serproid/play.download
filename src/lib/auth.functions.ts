@@ -1,6 +1,6 @@
 import { createServerFn, createServerOnlyFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
-import { auth } from './auth'
+import { auth, type Session } from './auth'
 
 export function hasAdminRole(role?: string | null) {
   return Boolean(
@@ -15,16 +15,45 @@ export function isDemoMode() {
   return !process.env.DATABASE_URL
 }
 
-export const getSession = createServerFn({ method: 'GET' }).handler(async () => {
-  if (isDemoMode()) return null
-  const headers = getRequestHeaders()
-  return auth.api.getSession({ headers })
-})
+const now = new Date()
+
+export const demoSession = {
+  user: {
+    id: 'demo-admin',
+    name: 'Administrador Demo',
+    email: 'admin@demo.playdownload',
+    emailVerified: true,
+    image: null,
+    role: 'admin',
+    banned: false,
+    banReason: null,
+    banExpires: null,
+    createdAt: now,
+    updatedAt: now,
+  },
+  session: {
+    id: 'demo-session',
+    token: 'demo-session-token',
+    userId: 'demo-admin',
+    expiresAt: new Date(now.getTime() + 1000 * 60 * 60 * 24 * 30),
+    createdAt: now,
+    updatedAt: now,
+    ipAddress: null,
+    userAgent: null,
+    impersonatedBy: null,
+  },
+} as Session
+
+export const getSession = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    if (isDemoMode()) return demoSession
+    const headers = getRequestHeaders()
+    return auth.api.getSession({ headers })
+  },
+)
 
 export const requireUser = createServerOnlyFn(async () => {
-  if (isDemoMode()) {
-    throw new Error('Configure o banco de dados (DATABASE_URL) para continuar.')
-  }
+  if (isDemoMode()) return demoSession
   const session = await auth.api.getSession({ headers: getRequestHeaders() })
   if (!session) {
     throw new Error('Você precisa entrar na sua conta.')

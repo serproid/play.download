@@ -18,7 +18,15 @@ import {
   type AppStatus,
   type AppType,
 } from './db/schema'
-import { demoApps, demoCategories, getDemoAppBySlug } from './demo-data'
+import {
+  demoApps,
+  demoCategories,
+  demoUsers,
+  getDemoAdminApp,
+  getDemoAdminApps,
+  getDemoAdminStats,
+  getDemoAppBySlug,
+} from './demo-data'
 import type {
   AdminApp,
   AdminStats,
@@ -254,6 +262,10 @@ export const getAppDetail = createServerFn({ method: 'GET' })
 
 export const getMySpace = createServerFn({ method: 'GET' }).handler(
   async (): Promise<MySpaceData> => {
+    if (isDemoMode()) {
+      return { submissions: getDemoAdminApps() }
+    }
+
     const session = await requireUser()
 
     const submissionRows = await db
@@ -272,6 +284,10 @@ export const getMySpace = createServerFn({ method: 'GET' }).handler(
 export const submitApp = createServerFn({ method: 'POST' })
   .validator((input: AppInput) => input)
   .handler(async ({ data }) => {
+    if (isDemoMode()) {
+      return { slug: demoApps[0]?.slug ?? 'ponto-de-coleta' }
+    }
+
     const session = await requireUser()
 
     if (!data.name?.trim() || data.name.trim().length < 2) {
@@ -310,6 +326,8 @@ export const submitApp = createServerFn({ method: 'POST' })
 
 export const adminListApps = createServerFn({ method: 'GET' }).handler(
   async (): Promise<AdminApp[]> => {
+    if (isDemoMode()) return getDemoAdminApps()
+
     await requireAdmin()
 
     const rows = await db
@@ -354,6 +372,8 @@ export const adminListApps = createServerFn({ method: 'GET' }).handler(
 export const adminGetApp = createServerFn({ method: 'GET' })
   .validator((input: { id: string }) => input)
   .handler(async ({ data }): Promise<AdminApp | null> => {
+    if (isDemoMode()) return getDemoAdminApp(data.id)
+
     await requireAdmin()
 
     const [row] = await db
@@ -400,6 +420,8 @@ export const adminGetApp = createServerFn({ method: 'GET' })
 export const getMyApp = createServerFn({ method: 'GET' })
   .validator((input: { id: string }) => input)
   .handler(async ({ data }): Promise<AdminApp | null> => {
+    if (isDemoMode()) return getDemoAdminApp(data.id)
+
     const session = await requireUser()
 
     const [row] = await db
@@ -446,6 +468,11 @@ export const getMyApp = createServerFn({ method: 'GET' })
 export const updateMyApp = createServerFn({ method: 'POST' })
   .validator((input: AppInput & { id: string }) => input)
   .handler(async ({ data }) => {
+    if (isDemoMode()) {
+      const app = getDemoAdminApp(data.id) ?? getDemoAdminApps()[0]
+      return { id: data.id, slug: app?.slug ?? 'ponto-de-coleta' }
+    }
+
     const session = await requireUser()
 
     const [existing] = await db
@@ -537,6 +564,12 @@ export const adminSaveApp = createServerFn({ method: 'POST' })
     ) => input,
   )
   .handler(async ({ data }) => {
+    if (isDemoMode()) {
+      return {
+        id: data.id ?? getDemoAdminApps()[0]?.id ?? 'demo-ponto-de-coleta',
+      }
+    }
+
     await requireAdmin()
     if (!data.name?.trim()) throw new Error('Informe o nome do app.')
     return persistApp(data)
@@ -545,6 +578,7 @@ export const adminSaveApp = createServerFn({ method: 'POST' })
 export const adminSetStatus = createServerFn({ method: 'POST' })
   .validator((input: { id: string; status: AppStatus }) => input)
   .handler(async ({ data }) => {
+    if (isDemoMode()) return { ok: true }
     await requireAdmin()
     await db
       .update(apps)
@@ -556,6 +590,7 @@ export const adminSetStatus = createServerFn({ method: 'POST' })
 export const adminToggleFeatured = createServerFn({ method: 'POST' })
   .validator((input: { id: string; featured: boolean }) => input)
   .handler(async ({ data }) => {
+    if (isDemoMode()) return { ok: true }
     await requireAdmin()
     await db
       .update(apps)
@@ -567,6 +602,7 @@ export const adminToggleFeatured = createServerFn({ method: 'POST' })
 export const adminDeleteApp = createServerFn({ method: 'POST' })
   .validator((input: { id: string }) => input)
   .handler(async ({ data }) => {
+    if (isDemoMode()) return { ok: true }
     await requireAdmin()
     await db.delete(apps).where(eq(apps.id, data.id))
     return { ok: true }
@@ -574,6 +610,8 @@ export const adminDeleteApp = createServerFn({ method: 'POST' })
 
 export const adminStats = createServerFn({ method: 'GET' }).handler(
   async (): Promise<AdminStats> => {
+    if (isDemoMode()) return getDemoAdminStats()
+
     await requireAdmin()
 
     const [appStats] = await db
@@ -605,6 +643,15 @@ export const adminStats = createServerFn({ method: 'GET' }).handler(
 export const adminListUsers = createServerFn({ method: 'GET' })
   .validator((input: { q?: string }) => input)
   .handler(async ({ data }): Promise<UserRow[]> => {
+    if (isDemoMode()) {
+      const query = data.q?.trim().toLowerCase()
+      return query
+        ? demoUsers.filter((item) =>
+            `${item.name} ${item.email}`.toLowerCase().includes(query),
+          )
+        : demoUsers
+    }
+
     await requireAdmin()
 
     const query = data.q?.trim()
@@ -637,6 +684,8 @@ export const adminCreateUser = createServerFn({ method: 'POST' })
       input,
   )
   .handler(async ({ data }) => {
+    if (isDemoMode()) return { id: 'demo-user-new' }
+
     await requireAdmin()
     const headers = getRequestHeaders()
     const result = await auth.api.createUser({
@@ -654,6 +703,8 @@ export const adminCreateUser = createServerFn({ method: 'POST' })
 export const adminSetUserRole = createServerFn({ method: 'POST' })
   .validator((input: { userId: string; role: string }) => input)
   .handler(async ({ data }) => {
+    if (isDemoMode()) return { ok: true }
+
     const session = await requireAdmin()
     if (session.user.id === data.userId) {
       throw new Error('Você não pode alterar o seu próprio nível de acesso.')
@@ -668,6 +719,8 @@ export const adminSetUserRole = createServerFn({ method: 'POST' })
 export const adminBanUser = createServerFn({ method: 'POST' })
   .validator((input: { userId: string; banReason?: string }) => input)
   .handler(async ({ data }) => {
+    if (isDemoMode()) return { ok: true }
+
     const session = await requireAdmin()
     if (session.user.id === data.userId) {
       throw new Error('Você não pode bloquear a si mesmo.')
@@ -685,6 +738,8 @@ export const adminBanUser = createServerFn({ method: 'POST' })
 export const adminUnbanUser = createServerFn({ method: 'POST' })
   .validator((input: { userId: string }) => input)
   .handler(async ({ data }) => {
+    if (isDemoMode()) return { ok: true }
+
     await requireAdmin()
     await auth.api.unbanUser({
       body: { userId: data.userId },
@@ -696,6 +751,8 @@ export const adminUnbanUser = createServerFn({ method: 'POST' })
 export const adminDeleteUser = createServerFn({ method: 'POST' })
   .validator((input: { userId: string }) => input)
   .handler(async ({ data }) => {
+    if (isDemoMode()) return { ok: true }
+
     const session = await requireAdmin()
     if (session.user.id === data.userId) {
       throw new Error('Você não pode excluir a própria conta.')

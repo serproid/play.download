@@ -1,4 +1,10 @@
-import type { AppDetail, CatalogApp, ReviewItem } from './types'
+import type {
+  AdminApp,
+  AppDetail,
+  CatalogApp,
+  ReviewItem,
+  UserRow,
+} from './types'
 
 export const demoCategories = [
   {
@@ -278,6 +284,9 @@ export function getDemoAppBySlug(slug: string): AppDetail | null {
 
   return {
     ...app,
+    status:
+      getDemoAdminApps().find((item) => item.id === app.id)?.status ??
+      app.status,
     description: demoDescriptions[slug] ?? app.tagline,
     version: '4.3',
     size: 'Varia por dispositivo',
@@ -289,6 +298,85 @@ export function getDemoAppBySlug(slug: string): AppDetail | null {
     categoryId: null,
     reviews,
     distribution,
-    submittedBy: null,
+    submittedBy: 'demo-admin',
+  }
+}
+
+const demoAdminStatuses = ['published', 'pending', 'rejected'] as const
+
+export function getDemoAdminApps(): AdminApp[] {
+  return demoApps.map((app, index) => ({
+    ...app,
+    status: demoAdminStatuses[index] ?? 'published',
+    description: demoDescriptions[app.slug] ?? app.tagline,
+    version: '4.3',
+    size: 'Varia por dispositivo',
+    requirements: 'Android 8.0 ou superior',
+    screenshots: [],
+    fileUrl: null,
+    fileName: null,
+    fileSize: null,
+    categoryId: null,
+    submittedBy: 'demo-admin',
+    submittedByName: 'Administrador Demo',
+    createdAt: app.updatedAt,
+  }))
+}
+
+export function getDemoAdminApp(id: string): AdminApp | null {
+  return getDemoAdminApps().find((app) => app.id === id) ?? null
+}
+
+export const demoUsers: UserRow[] = [
+  {
+    id: 'demo-admin',
+    name: 'Administrador Demo',
+    email: 'admin@demo.playdownload',
+    role: 'admin',
+    banned: false,
+    createdAt: '2026-09-01T12:00:00.000Z',
+    emailVerified: true,
+    image: null,
+  },
+  {
+    id: 'demo-user-1',
+    name: 'Fernanda Rocha',
+    email: 'fernanda@exemplo.com',
+    role: 'user',
+    banned: false,
+    createdAt: '2026-09-12T12:00:00.000Z',
+    emailVerified: true,
+    image: null,
+  },
+  {
+    id: 'demo-user-2',
+    name: 'Lucas Oliveira',
+    email: 'lucas@exemplo.com',
+    role: 'user',
+    banned: false,
+    createdAt: '2026-09-18T12:00:00.000Z',
+    emailVerified: true,
+    image: null,
+  },
+  {
+    id: 'demo-user-3',
+    name: 'Gustavo Lima',
+    email: 'gustavo@exemplo.com',
+    role: 'user',
+    banned: true,
+    createdAt: '2026-09-24T12:00:00.000Z',
+    emailVerified: false,
+    image: null,
+  },
+]
+
+export function getDemoAdminStats() {
+  const apps = getDemoAdminApps()
+  return {
+    published: apps.filter((app) => app.status === 'published').length,
+    pending: apps.filter((app) => app.status === 'pending').length,
+    downloads: apps.reduce((total, app) => total + app.downloads, 0),
+    users: demoUsers.length,
+    reviews: demoApps.reduce((total, app) => total + app.reviewCount, 0),
   }
 }

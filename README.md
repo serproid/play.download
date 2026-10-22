@@ -23,7 +23,7 @@ Plataforma para cada usuário criar e divulgar a página do seu app. Cada app te
 - Upload autenticado de arquivos para o Supabase Storage
 - Registro de downloads por usuário/app
 - Tipografia nativa do sistema, sem requisições externas de fontes
-- **Modo demonstração**: sem `DATABASE_URL`, o catálogo usa dados fictícios e o login/admin ficam indisponíveis
+- **Modo demonstração**: sem `DATABASE_URL`, o site usa dados fictícios e uma sessão de admin simulada para visualizar página do app, conta e painel admin (sem persistir alterações)
 
 ## Rodando localmente
 
@@ -65,7 +65,7 @@ Acesse `http://localhost:3000/admin` com a conta de administrador criada pelo se
 4. Copie `SUPABASE_URL` e a **service role key** (Project Settings → API). A service role fica somente no servidor.
 5. Rode `npm run db:push` e `npm run db:seed`.
 
-Sem um banco configurado, a interface funciona em modo demonstração, mas autenticação, admin, avaliações e uploads ficam desativados.
+Sem um banco configurado, a interface funciona em modo demonstração: página do app, conta e painel admin ficam acessíveis com dados fictícios, mas alterações, uploads e autenticação real não são persistidos.
 
 ## Scripts
 
