@@ -16,7 +16,7 @@ export const Route = createFileRoute('/admin')({
   },
   head: () => ({
     meta: [
-      { title: 'Acesso administrativo — Play Download' },
+      { title: 'Acesso administrativo — Play Store' },
       { name: 'robots', content: 'noindex, nofollow' },
     ],
   }),

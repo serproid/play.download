@@ -18,7 +18,7 @@ export const Route = createRootRoute({
           'width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5',
       },
       {
-        title: 'Play Download — a página do seu app',
+        title: 'Play Store — a página do seu app',
       },
       {
         name: 'description',
@@ -26,7 +26,7 @@ export const Route = createRootRoute({
           'Crie a página do seu app e receba um link exclusivo para divulgar. Cada app tem seu próprio espaço, isolado e personalizado.',
       },
       { name: 'theme-color', content: '#01875f' },
-      { property: 'og:title', content: 'Play Download' },
+      { property: 'og:title', content: 'Play Store' },
       {
         property: 'og:description',
         content: 'A página do seu app, com link exclusivo para divulgar.',

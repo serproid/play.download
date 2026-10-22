@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_store/$slug')({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: 'Play Download' }] }
+      return { meta: [{ title: 'Play Store' }] }
     }
 
     const description =
@@ -24,7 +24,7 @@ export const Route = createFileRoute('/_store/$slug')({
       `Baixe ${loaderData.name} e confira todos os detalhes.`
 
     const meta: Array<Record<string, string>> = [
-      { title: `${loaderData.name} — Play Download` },
+      { title: `${loaderData.name} — Play Store` },
       { name: 'description', content: description },
       { property: 'og:title', content: loaderData.name },
       { property: 'og:description', content: description },

@@ -330,7 +330,7 @@ export const demoUsers: UserRow[] = [
   {
     id: 'demo-admin',
     name: 'Administrador Demo',
-    email: 'admin@demo.playdownload',
+    email: 'admin@demo.playstore',
     role: 'admin',
     banned: false,
     createdAt: '2026-09-01T12:00:00.000Z',

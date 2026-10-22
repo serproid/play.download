@@ -1,4 +1,4 @@
-# Play Download
+# Play Store
 
 Plataforma para cada usuário criar e divulgar a página do seu app. Cada app tem uma URL própria (`dominio.com/nome-do-app`), isolada das demais, com painel administrativo para moderação.
 
