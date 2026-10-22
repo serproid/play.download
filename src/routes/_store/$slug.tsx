@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
-import { Info, Pencil, Star, ThumbsUp } from 'lucide-react'
+import { Info, Star, ThumbsUp } from 'lucide-react'
 import { AppIcon } from '@/components/store/app-icon'
 import { DeviceNote, InstallButton } from '@/components/store/app-actions'
 import { Stars } from '@/components/store/stars'
@@ -136,21 +136,11 @@ function AppDetailPage() {
       </header>
 
       {isOwner ? (
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <p className="text-xs text-muted-foreground">
-            {isPending
-              ? 'Sua página está em análise.'
-              : 'Sua página está publicada.'}
-          </p>
-          <Link
-            to="/meus-apps/$id"
-            params={{ id: app.id }}
-            className="inline-flex items-center gap-1 text-[12px] font-medium text-brand hover:underline"
-          >
-            <Pencil className="size-3.5" />
-            Editar página
-          </Link>
-        </div>
+        <p className="mt-4 text-xs text-muted-foreground">
+          {isPending
+            ? 'Sua página está em análise.'
+            : 'Sua página está publicada.'}
+        </p>
       ) : null}
 
       <div className="mt-5 grid grid-cols-3 divide-x divide-border border-y border-border">
