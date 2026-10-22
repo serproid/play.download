@@ -39,10 +39,13 @@ function AdminDashboard() {
 
   const myApps = apps
     .filter((app) => app.submittedBy === user.id)
-    .sort((a, b) => b.downloads - a.downloads)
-  const totalDownloads = myApps.reduce((total, app) => total + app.downloads, 0)
+    .sort((a, b) => b.realDownloads - a.realDownloads)
+  const totalDownloads = myApps.reduce(
+    (total, app) => total + app.realDownloads,
+    0,
+  )
   const published = myApps.filter((app) => app.status === 'published').length
-  const maxDownloads = Math.max(...myApps.map((app) => app.downloads), 1)
+  const maxDownloads = Math.max(...myApps.map((app) => app.realDownloads), 1)
 
   const cards = [
     {
@@ -140,7 +143,9 @@ function AdminDashboard() {
         {myApps.length > 0 ? (
           <div className="divide-y divide-border">
             {myApps.map((app) => {
-              const percent = Math.round((app.downloads / maxDownloads) * 100)
+              const percent = Math.round(
+                (app.realDownloads / maxDownloads) * 100,
+              )
               return (
                 <div key={app.id} className="px-4 py-3.5">
                   <div className="flex items-center gap-3">
@@ -162,7 +167,7 @@ function AdminDashboard() {
                     </div>
                     <div className="shrink-0 text-right">
                       <p className="text-base font-semibold tabular-nums text-foreground">
-                        {numberFormatter.format(app.downloads)}
+                        {numberFormatter.format(app.realDownloads)}
                       </p>
                       <p className="text-[10px] text-muted-foreground">
                         downloads

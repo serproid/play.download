@@ -184,7 +184,7 @@ function AdminAppsPage() {
                   </span>
                 </span>
                 <span className="hidden text-[11px] text-muted-foreground sm:block">
-                  {formatCount(app.downloads)}
+                  {formatCount(app.realDownloads)}
                 </span>
                 <div className="flex items-center gap-1 sm:justify-end">
                   <span

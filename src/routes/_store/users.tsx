@@ -7,6 +7,7 @@ import { UserAuthPanel } from '@/components/user-auth-panel'
 import { getMySpace } from '@/lib/apps.functions'
 import { authClient } from '@/lib/auth-client'
 import { hasAdminRoleClient } from '@/lib/roles'
+import { formatCount } from '@/lib/utils'
 import type { MySpaceData, SessionUser } from '@/lib/types'
 
 export const Route = createFileRoute('/_store/users')({
@@ -160,6 +161,9 @@ function Account({ data, user }: { data: MySpaceData; user: SessionUser }) {
                   </p>
                   <p className="truncate text-[13px] text-muted-foreground">
                     {app.tagline ?? app.categoryName ?? 'Página do app'}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                    {formatCount(app.realDownloads ?? 0)} downloads reais
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1.5">
