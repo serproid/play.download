@@ -1,11 +1,5 @@
 import { useRouter } from '@tanstack/react-router'
-import {
-  ImagePlus,
-  Loader2,
-  Save,
-  UploadCloud,
-  X,
-} from 'lucide-react'
+import { ImagePlus, Loader2, Save, UploadCloud, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { AppIcon } from '@/components/store/app-icon'
@@ -20,10 +14,7 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  adminSaveApp,
-  submitApp,
-} from '@/lib/apps.functions'
+import { adminSaveApp, submitApp } from '@/lib/apps.functions'
 import type { AdminApp, AppInput } from '@/lib/types'
 import type { AppStatus, AppType } from '@/lib/db/schema'
 import { cn, formatFileSize } from '@/lib/utils'
@@ -118,14 +109,14 @@ export function AppForm({
     (category) => category.type === null || category.type === form.type,
   )
 
-  function update<TKey extends keyof AppInput>(key: TKey, value: AppInput[TKey]) {
+  function update<TKey extends keyof AppInput>(
+    key: TKey,
+    value: AppInput[TKey],
+  ) {
     setForm((current) => ({ ...current, [key]: value }))
   }
 
-  async function upload(
-    file: File,
-    field: 'iconUrl' | 'bannerUrl' | 'file',
-  ) {
+  async function upload(file: File, field: 'iconUrl' | 'bannerUrl' | 'file') {
     setUploading(field)
     try {
       const body = new FormData()
@@ -192,7 +183,10 @@ export function AppForm({
         })
         toast.success(initial ? 'App atualizado.' : 'App criado.')
         await router.invalidate()
-        await router.navigate({ to: '/admin/apps', search: { status: undefined } })
+        await router.navigate({
+          to: '/admin/apps',
+          search: { status: undefined },
+        })
       } else {
         await submitApp({ data: payload })
         toast.success('App enviado! Ele será analisado pela nossa equipe.')
@@ -427,7 +421,7 @@ export function AppForm({
               </p>
             ) : (
               <p className="mt-2 text-[11px] text-muted-foreground">
-                APK, PDF, EPUB, ZIP ou MP4 · até 150 MB. Você também pode colar
+                APK, PDF, EPUB, ZIP ou MP4 · até 100 MB. Você também pode colar
                 um link abaixo.
               </p>
             )}

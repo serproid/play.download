@@ -1,0 +1,8 @@
+DATABASE_URL=
+DATABASE_SSL=true
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=dev-secret-play-download-please-change-in-production-123456
+BETTER_AUTH_ALLOWED_HOSTS=localhost:3000
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_BUCKET=apps

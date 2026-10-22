@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { auth } from '@/lib/auth'
 
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024
-const MAX_FILE_SIZE = 150 * 1024 * 1024
+const MAX_FILE_SIZE = 100 * 1024 * 1024
 
 const allowedTypes = new Set([
   'image/png',
@@ -84,11 +84,11 @@ export const Route = createFileRoute('/api/upload')({
 
         const bucket = process.env.SUPABASE_BUCKET ?? 'apps'
         const path = `${session.user.id}/${Date.now()}-${safeName(file.name)}`
-        const buffer = Buffer.from(await file.arrayBuffer())
+        const bytes = new Uint8Array(await file.arrayBuffer())
 
         const { error } = await supabase.storage
           .from(bucket)
-          .upload(path, buffer, {
+          .upload(path, bytes, {
             contentType: file.type,
             cacheControl: '31536000',
             upsert: false,

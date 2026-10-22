@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "play-download",
+  "compatibility_date": "2025-09-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  "vars": {
+    "DATABASE_SSL": "true",
+    "SUPABASE_BUCKET": "apps",
+    "BETTER_AUTH_ALLOWED_HOSTS": "play.download,www.play.download"
+  }
+}

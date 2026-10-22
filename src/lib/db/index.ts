@@ -15,7 +15,7 @@ export const pool =
   globalThis.__baixappPool ??
   new Pool({
     connectionString,
-    max: 10,
+    max: 5,
     ssl: useSsl ? { rejectUnauthorized: false } : undefined,
   })
 
