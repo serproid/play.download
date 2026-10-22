@@ -6,7 +6,7 @@
   "main": "@tanstack/react-start/server-entry",
   "upload_source_maps": false,
   "vars": {
-    "DATABASE_SSL": "true",
+    "DATABASE_SSL": "false",
     "SUPABASE_BUCKET": "apps",
     "BETTER_AUTH_ALLOWED_HOSTS": "play.download,www.play.download"
   }

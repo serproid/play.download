@@ -24,7 +24,7 @@ function createClient() {
     idle_timeout: 5,
     connect_timeout: 10,
     prepare: false,
-    ssl: useSsl ? { rejectUnauthorized: false } : false,
+    ssl: useSsl ? 'require' : false,
   })
 }
 
