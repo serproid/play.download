@@ -1,4 +1,3 @@
-import { useRouter } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -7,7 +6,6 @@ import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth-client'
 
 export function UserAuthPanel({ redirectTo }: { redirectTo?: string }) {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -26,7 +24,6 @@ export function UserAuthPanel({ redirectTo }: { redirectTo?: string }) {
       }
 
       toast.success('Sessão iniciada.')
-      await router.invalidate()
       window.location.assign(redirectTo ?? '/users')
     } catch {
       setError('Não foi possível continuar. Tente novamente.')

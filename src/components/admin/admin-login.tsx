@@ -1,4 +1,3 @@
-import { useRouter } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -9,7 +8,6 @@ import { authClient } from '@/lib/auth-client'
 import { hasAdminRoleClient } from '@/lib/roles'
 
 export function AdminLogin() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -34,7 +32,6 @@ export function AdminLogin() {
       }
 
       toast.success('Acesso liberado.')
-      await router.invalidate()
       window.location.assign('/admin/painel')
     } catch {
       setError('Não foi possível entrar. Tente novamente.')
@@ -86,9 +83,7 @@ export function AdminLogin() {
             />
           </div>
 
-          {error ? (
-            <p className="text-[13px] text-[#c5221f]">{error}</p>
-          ) : null}
+          {error ? <p className="text-[13px] text-[#c5221f]">{error}</p> : null}
 
           <button
             type="submit"

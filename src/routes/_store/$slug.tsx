@@ -4,6 +4,7 @@ import { AppIcon } from '@/components/store/app-icon'
 import { DeviceNote, InstallButton } from '@/components/store/app-actions'
 import { Stars } from '@/components/store/stars'
 import { getAppDetail } from '@/lib/apps.functions'
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL, ogImageFor } from '@/lib/seo'
 import type { AppDetail } from '@/lib/types'
 import { cn, formatCount } from '@/lib/utils'
 
@@ -15,27 +16,52 @@ export const Route = createFileRoute('/_store/$slug')({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: 'Play Store' }] }
+      return { meta: [{ title: SITE_NAME }] }
     }
 
-    const description =
+    const rawDescription =
       loaderData.tagline ??
       loaderData.description ??
       `Baixe ${loaderData.name} e confira todos os detalhes.`
+    const description =
+      rawDescription.length > 200
+        ? `${rawDescription.slice(0, 197).trimEnd()}...`
+        : rawDescription
+    const url = `${SITE_URL}/${loaderData.slug}`
+    const image = ogImageFor(loaderData.iconUrl)
+    const isDefaultImage = image === DEFAULT_OG_IMAGE
 
     const meta: Array<Record<string, string>> = [
-      { title: `${loaderData.name} — Play Store` },
+      { title: `${loaderData.name} — ${SITE_NAME}` },
       { name: 'description', content: description },
       { property: 'og:title', content: loaderData.name },
       { property: 'og:description', content: description },
       { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: url },
+      { property: 'og:site_name', content: SITE_NAME },
+      { property: 'og:locale', content: 'pt_BR' },
+      { property: 'og:image', content: image },
+      { property: 'og:image:alt', content: `Ícone de ${loaderData.name}` },
+      {
+        name: 'twitter:card',
+        content: isDefaultImage ? 'summary_large_image' : 'summary',
+      },
+      { name: 'twitter:title', content: loaderData.name },
+      { name: 'twitter:description', content: description },
+      { name: 'twitter:image', content: image },
     ]
 
-    if (loaderData.iconUrl) {
-      meta.push({ property: 'og:image', content: loaderData.iconUrl })
+    if (isDefaultImage) {
+      meta.push(
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+      )
     }
 
-    return { meta }
+    return {
+      meta,
+      links: [{ rel: 'canonical', href: url }],
+    }
   },
   notFoundComponent: AppNotFound,
   component: AppDetailPage,

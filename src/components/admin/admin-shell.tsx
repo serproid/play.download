@@ -10,6 +10,7 @@ import {
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { BrandLogo } from '@/components/brand-logo'
+import { NavigationProgress } from '@/components/navigation-progress'
 import {
   Sheet,
   SheetContent,
@@ -119,6 +120,7 @@ export function AdminShell({
 }) {
   return (
     <div className="min-h-svh bg-[#f5f7f6]">
+      <NavigationProgress />
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border bg-card lg:flex">
         <div className="flex h-16 items-center border-b border-border px-5">
           <BrandLogo />

@@ -1,8 +1,10 @@
 import { BrandLogo } from '@/components/brand-logo'
+import { NavigationProgress } from '@/components/navigation-progress'
 
 export function StoreShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-svh flex-col bg-background">
+      <NavigationProgress />
       <header className="sticky top-0 z-30 border-b border-border bg-background">
         <div className="mx-auto flex h-14 w-full max-w-[820px] items-center justify-between px-4">
           <BrandLogo />

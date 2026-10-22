@@ -24,6 +24,7 @@ function createClient() {
     idle_timeout: 5,
     connect_timeout: 10,
     prepare: false,
+    fetch_types: false,
     ssl: useSsl ? 'require' : false,
   })
 }

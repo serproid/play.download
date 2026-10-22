@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-router'
 import { PackageOpen } from 'lucide-react'
 import { Toaster } from '@/components/ui/sonner'
+import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/seo'
 import appCss from '../styles.css?url'
 
 export const Route = createRootRoute({
@@ -26,12 +27,24 @@ export const Route = createRootRoute({
           'Crie a página do seu app e receba um link exclusivo para divulgar. Cada app tem seu próprio espaço, isolado e personalizado.',
       },
       { name: 'theme-color', content: '#01875f' },
-      { property: 'og:title', content: 'Play Store' },
+      { property: 'og:title', content: SITE_NAME },
       {
         property: 'og:description',
         content: 'A página do seu app, com link exclusivo para divulgar.',
       },
       { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: SITE_URL },
+      { property: 'og:site_name', content: SITE_NAME },
+      { property: 'og:locale', content: 'pt_BR' },
+      { property: 'og:image', content: DEFAULT_OG_IMAGE },
+      { property: 'og:image:alt', content: 'Play Store — a página do seu app' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: SITE_NAME },
+      {
+        name: 'twitter:description',
+        content: 'A página do seu app, com link exclusivo para divulgar.',
+      },
+      { name: 'twitter:image', content: DEFAULT_OG_IMAGE },
     ],
     links: [
       {

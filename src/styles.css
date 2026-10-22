@@ -165,3 +165,12 @@
 .animate-arrow-rise {
   animation: arrow-rise 1.4s ease-in-out infinite;
 }
+
+@keyframes nav-progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
